@@ -164,9 +164,9 @@ body {
 .gallery {
     max-width: 1600px;
     margin: 0 auto;
-    padding: 24px 32px 60px;
+    padding: 20px 24px 40px;
     column-count: 5;
-    column-gap: var(--gap);
+    column-gap: 12px;
 }
 
 .card {
@@ -220,21 +220,21 @@ body {
 }
 
 .card-info {
-    padding: 10px 12px;
+    padding: 8px 10px;
 }
 
 .card-code {
-    font-size: 9px;
+    font-size: 8px;
     color: var(--accent-gold-dim);
-    letter-spacing: 2px;
-    margin-bottom: 4px;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
 }
 
 .card-name {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 2px;
+    margin-bottom: 1px;
     cursor: pointer;
 }
 
@@ -243,24 +243,24 @@ body {
 }
 
 .card-brand {
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-muted);
 }
 
 .card-links {
     display: flex;
-    gap: 4px;
-    margin-top: 8px;
+    gap: 3px;
+    margin-top: 6px;
 }
 
 .card-link {
-    padding: 2px 6px;
+    padding: 2px 5px;
     background: transparent;
     border: 1px solid var(--border-main);
     color: var(--text-muted);
-    font-size: 8px;
+    font-size: 7px;
     font-family: inherit;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-decoration: none;
     transition: all 0.2s;
 }
@@ -480,36 +480,43 @@ body {
    响应式布局
    ======================================== */
 
-/* 超大屏幕 */
-@media (min-width: 1600px) {
+/* 超超大屏幕 */
+@media (min-width: 1800px) {
     .gallery {
         column-count: 6;
     }
 }
 
-/* 大屏幕 */
-@media (min-width: 1200px) and (max-width: 1599px) {
+/* 超大屏幕 */
+@media (min-width: 1400px) and (max-width: 1799px) {
     .gallery {
         column-count: 5;
     }
 }
 
-/* 中大屏幕 */
-@media (min-width: 900px) and (max-width: 1199px) {
+/* 大屏幕 */
+@media (min-width: 1100px) and (max-width: 1399px) {
     .gallery {
         column-count: 4;
     }
 }
 
-/* 中等屏幕 */
-@media (min-width: 600px) and (max-width: 899px) {
+/* 中大屏幕 */
+@media (min-width: 800px) and (max-width: 1099px) {
     .gallery {
         column-count: 3;
     }
 }
 
+/* 中等屏幕 */
+@media (min-width: 500px) and (max-width: 799px) {
+    .gallery {
+        column-count: 2;
+    }
+}
+
 /* 小屏幕 */
-@media (max-width: 599px) {
+@media (max-width: 499px) {
     .gallery {
         column-count: 2;
         padding: 12px;
@@ -550,7 +557,7 @@ body {
 }
 
 /* 超小屏幕 */
-@media (max-width: 380px) {
+@media (max-width: 360px) {
     .gallery {
         column-count: 1;
     }
