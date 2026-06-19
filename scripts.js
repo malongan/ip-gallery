@@ -1,290 +1,300 @@
 /**
- * IP Archive Gallery - 瀑布流画廊
+ * IP Archive - Gallery Scripts v2
+ * 复古像素风格
  */
 
-// 数据源（CI 会自动更新此文件）
-let galleryData = {
-    updated: '-',
-    ips: []
-};
+// Data URL (CI will auto-generate this)
+const DATA_URL = 'data.json';
 
-// 当前筛选
+// State
+let allIPs = [];
 let currentFilter = 'all';
-let searchQuery = '';
 
-// ========================================
-// 初始化
-// ========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    initEventListeners();
-});
-
-// 加载数据
-async function loadData() {
+/**
+ * Initialize the gallery
+ */
+async function init() {
     try {
-        const response = await fetch('data.json');
-        if (!response.ok) throw new Error('数据加载失败');
-        
-        galleryData = await response.json();
+        await loadData();
+        renderBrandFilter();
         renderGallery();
-        renderFilters();
-        updateTime();
+        setupEventListeners();
     } catch (error) {
-        console.error('加载数据失败:', error);
-        showEmpty();
-    }
-}
-
-// 初始化事件监听
-function initEventListeners() {
-    // 搜索
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        searchQuery = e.target.value.toLowerCase();
-        renderGallery();
-    });
-
-    // 弹窗关闭
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('modal').addEventListener('click', (e) => {
-        if (e.target.id === 'modal') closeModal();
-    });
-
-    // ESC 关闭弹窗
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-    });
-
-    // 复制按钮
-    document.getElementById('btnCopy').addEventListener('click', copyName);
-}
-
-// ========================================
-// 渲染
-// ========================================
-
-// 渲染瀑布流
-function renderGallery() {
-    const gallery = document.getElementById('gallery');
-    const filteredIPs = getFilteredIPs();
-
-    if (filteredIPs.length === 0) {
-        showEmpty();
-        return;
-    }
-
-    gallery.innerHTML = filteredIPs.map((ip, index) => createCardHTML(ip, index)).join('');
-    
-    // 添加卡片点击事件
-    gallery.querySelectorAll('.card').forEach((card, i) => {
-        card.addEventListener('click', () => openModal(filteredIPs[i]));
-    });
-
-    // 添加名称点击复制事件
-    gallery.querySelectorAll('.card-name').forEach((name, i) => {
-        name.addEventListener('click', (e) => {
-            e.stopPropagation();
-            copyToClipboard(filteredIPs[i].name, name);
-        });
-    });
-}
-
-// 创建卡片 HTML
-function createCardHTML(ip, index) {
-    const code = `IP${String(index + 1).padStart(3, '0')}`;
-    
-    return `
-        <div class="card" data-id="${ip.id}">
-            <img class="card-image" src="${ip.preview}" alt="${ip.name}" loading="lazy">
-            <div class="card-info">
-                <div class="card-code">${code}</div>
-                <div class="card-name">${ip.name}</div>
-                <div class="card-brand">${ip.brand || ''}</div>
-                <div class="card-links">
-                    ${createLinkButtons(ip, 'card-link')}
-                </div>
+        console.error('Failed to load gallery data:', error);
+        document.getElementById('gallery').innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">▣</div>
+                <div class="empty-text">LOADING FAILED</div>
             </div>
-        </div>
-    `;
+        `;
+    }
 }
 
-// 创建链接按钮
-function createLinkButtons(ip, className = 'btn-link') {
-    let buttons = '';
-    
-    if (ip.brand_url) {
-        buttons += `<a class="${className}" href="${ip.brand_url}" target="_blank">品牌</a>`;
+/**
+ * Load data from JSON file
+ */
+async function loadData() {
+    const response = await fetch(DATA_URL);
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
     }
-    if (ip.official_url) {
-        buttons += `<a class="${className}" href="${ip.official_url}" target="_blank">官网</a>`;
-    }
-    if (ip.source_url) {
-        buttons += `<a class="${className}" href="${ip.source_url}" target="_blank">设定</a>`;
-    }
-    
-    return buttons;
+    const data = await response.json();
+    allIPs = data.ips || [];
 }
 
-// 渲染筛选按钮
-function renderFilters() {
+/**
+ * Render brand filter buttons
+ */
+function renderBrandFilter() {
+    const brands = [...new Set(allIPs.map(ip => ip.brand).filter(Boolean))];
     const filterBar = document.getElementById('filterBar');
-    const brands = [...new Set(galleryData.ips.map(ip => ip.brand).filter(Boolean))];
     
-    let html = '<button class="filter-btn active" data-brand="all">全部</button>';
+    // All button
+    let html = `<button class="filter-btn active" data-brand="all">ALL</button>`;
     
+    // Brand buttons
     brands.forEach(brand => {
         html += `<button class="filter-btn" data-brand="${brand}">${brand}</button>`;
     });
     
     filterBar.innerHTML = html;
-    
-    // 添加点击事件
-    filterBar.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.brand;
-            renderGallery();
-        });
-    });
 }
 
-// 更新时间
-function updateTime() {
-    const timeEl = document.getElementById('updateTime');
-    if (galleryData.updated) {
-        timeEl.textContent = galleryData.updated;
-    }
-}
-
-// 空状态
-function showEmpty() {
+/**
+ * Render gallery cards
+ */
+function renderGallery() {
     const gallery = document.getElementById('gallery');
-    gallery.innerHTML = `
-        <div class="empty">
-            <div class="empty-icon">🔍</div>
-            <div class="empty-text">没有找到匹配的 IP</div>
-        </div>
-    `;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    
+    // Filter IPs
+    let filteredIPs = allIPs;
+    
+    // Search filter
+    if (searchTerm) {
+        filteredIPs = filteredIPs.filter(ip => 
+            ip.name.toLowerCase().includes(searchTerm) ||
+            (ip.brand && ip.brand.toLowerCase().includes(searchTerm))
+        );
+    }
+    
+    // Brand filter
+    if (currentFilter !== 'all') {
+        filteredIPs = filteredIPs.filter(ip => ip.brand === currentFilter);
+    }
+    
+    // Empty state
+    if (filteredIPs.length === 0) {
+        gallery.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">▣</div>
+                <div class="empty-text">NO RESULTS</div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Render cards
+    gallery.innerHTML = filteredIPs.map((ip, index) => `
+        <article class="card" data-id="${ip.id}">
+            <div class="card-image">
+                <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
+            </div>
+            <div class="card-info">
+                <div class="card-code">${ip.code || 'IP' + String(index + 1).padStart(3, '0')}</div>
+                <div class="card-name" data-name="${ip.name}">${ip.name}</div>
+                <div class="card-brand">${ip.brand || ''}</div>
+                <div class="card-links">
+                    ${ip.brand_url ? `<a class="card-link" href="${ip.brand_url}" target="_blank">BRAND</a>` : ''}
+                    ${ip.official_url ? `<a class="card-link" href="${ip.official_url}" target="_blank">OFFICIAL</a>` : ''}
+                    ${ip.source_url ? `<a class="card-link" href="${ip.source_url}" target="_blank">SOURCE</a>` : ''}
+                </div>
+            </div>
+        </article>
+    `).join('');
 }
 
-// ========================================
-// 筛选
-// ========================================
-
-function getFilteredIPs() {
-    return galleryData.ips.filter(ip => {
-        // 品牌筛选
-        const brandMatch = currentFilter === 'all' || ip.brand === currentFilter;
+/**
+ * Setup event listeners
+ */
+function setupEventListeners() {
+    // Search input
+    document.getElementById('searchInput').addEventListener('input', debounce(renderGallery, 200));
+    
+    // Brand filter buttons
+    document.getElementById('filterBar').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+            // Update active state
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            // Update filter
+            currentFilter = e.target.dataset.brand;
+            renderGallery();
+        }
+    });
+    
+    // Card click - open modal or copy name
+    document.getElementById('gallery').addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
+        const nameBtn = e.target.closest('.card-name');
+        const linkBtn = e.target.closest('.card-link');
         
-        // 搜索筛选
-        const searchMatch = !searchQuery || 
-            ip.name.toLowerCase().includes(searchQuery) ||
-            (ip.brand && ip.brand.toLowerCase().includes(searchQuery)) ||
-            (ip.code && ip.code.toLowerCase().includes(searchQuery));
+        // If clicked on a link, don't open modal
+        if (linkBtn) return;
         
-        return brandMatch && searchMatch;
+        if (nameBtn) {
+            // Copy name
+            e.stopPropagation();
+            copyToClipboard(nameBtn.dataset.name);
+            return;
+        }
+        
+        if (card) {
+            const ipId = card.dataset.id;
+            const ip = allIPs.find(i => i.id === ipId);
+            if (ip) {
+                openModal(ip);
+            }
+        }
+    });
+    
+    // Modal close
+    document.querySelector('.modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            closeModal();
+        }
+    });
+    
+    // Copy name button in modal
+    document.getElementById('copyNameBtn').addEventListener('click', () => {
+        const name = document.getElementById('modalName').textContent;
+        copyToClipboard(name);
+        
+        // Visual feedback
+        const btn = document.getElementById('copyNameBtn');
+        btn.classList.add('copied');
+        btn.textContent = 'COPIED!';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.textContent = 'COPY NAME';
+        }, 1500);
+    });
+    
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
     });
 }
 
-// ========================================
-// 弹窗
-// ========================================
-
+/**
+ * Open modal with IP details
+ */
 function openModal(ip) {
     const modal = document.getElementById('modal');
-    const index = galleryData.ips.findIndex(i => i.id === ip.id) + 1;
-    const code = `IP${String(index).padStart(3, '0')}`;
     
-    document.getElementById('modalImg').src = ip.preview;
-    document.getElementById('modalImg').alt = ip.name;
-    document.getElementById('modalTitle').textContent = ip.name;
-    document.getElementById('modalMeta').textContent = `${ip.brand || ''} · ${code}`;
-    document.getElementById('modalDesc').textContent = ip.description || '暂无介绍';
+    // Set image
+    document.getElementById('modalImage').src = ip.preview || '';
+    document.getElementById('modalImage').alt = ip.name;
     
-    // 链接按钮
-    const btnBrand = document.getElementById('btnBrand');
-    const btnOfficial = document.getElementById('btnOfficial');
-    const btnSource = document.getElementById('btnSource');
+    // Set info
+    document.getElementById('modalName').textContent = ip.name;
+    document.getElementById('modalMeta').textContent = `${ip.brand || ''} · ${ip.code || ''}`;
+    
+    // Set description
+    document.getElementById('modalDescription').textContent = ip.description || 'No description available.';
+    
+    // Set links
+    const brandLink = document.getElementById('brandLink');
+    const officialLink = document.getElementById('officialLink');
+    const sourceLink = document.getElementById('sourceLink');
     
     if (ip.brand_url) {
-        btnBrand.href = ip.brand_url;
-        btnBrand.classList.remove('hidden');
+        brandLink.href = ip.brand_url;
+        brandLink.classList.remove('hidden');
     } else {
-        btnBrand.classList.add('hidden');
+        brandLink.classList.add('hidden');
     }
     
     if (ip.official_url) {
-        btnOfficial.href = ip.official_url;
-        btnOfficial.classList.remove('hidden');
+        officialLink.href = ip.official_url;
+        officialLink.classList.remove('hidden');
     } else {
-        btnOfficial.classList.add('hidden');
+        officialLink.classList.add('hidden');
     }
     
     if (ip.source_url) {
-        btnSource.href = ip.source_url;
-        btnSource.classList.remove('hidden');
+        sourceLink.href = ip.source_url;
+        sourceLink.classList.remove('hidden');
     } else {
-        btnSource.classList.add('hidden');
+        sourceLink.classList.add('hidden');
     }
     
+    // Show modal
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
+/**
+ * Close modal
+ */
 function closeModal() {
-    document.getElementById('modal').classList.remove('active');
+    const modal = document.getElementById('modal');
+    modal.classList.remove('active');
     document.body.style.overflow = '';
 }
 
-// ========================================
-// 复制功能
-// ========================================
-
-async function copyName() {
-    const name = document.getElementById('modalTitle').textContent;
-    const success = await copyToClipboard(name, document.getElementById('btnCopy'));
-    
-    if (success) {
-        showToast('已复制');
-    }
-}
-
-async function copyToClipboard(text, element) {
+/**
+ * Copy text to clipboard
+ */
+async function copyToClipboard(text) {
     try {
         await navigator.clipboard.writeText(text);
-        
-        if (element && element.classList.contains('card-name')) {
-            const original = element.textContent;
-            element.textContent = '已复制';
-            element.style.color = 'var(--accent)';
-            setTimeout(() => {
-                element.textContent = original;
-                element.style.color = '';
-            }, 1000);
-        }
-        
-        return true;
+        showToast('COPIED');
     } catch (err) {
-        console.error('复制失败:', err);
-        return false;
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('COPIED');
     }
 }
 
-// Toast 提示
+/**
+ * Show toast message
+ */
 function showToast(message) {
-    let toast = document.querySelector('.toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.className = 'toast';
-        document.body.appendChild(toast);
-    }
-    
+    const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.classList.add('show');
     
     setTimeout(() => {
         toast.classList.remove('show');
-    }, 2000);
+    }, 1500);
 }
+
+/**
+ * Debounce function
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', init);
