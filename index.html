@@ -3,54 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Archive</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>IP · ARCHIVE</title>
+    <link rel="stylesheet" href="CSS/styles.css">
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <h1 class="logo">IP · ARCHIVE</h1>
-            <p class="subtitle">2026</p>
+        <div class="header-title">
+            <h1>IP · ARCHIVE</h1>
+            <p class="header-subtitle">2026</p>
         </div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="搜索 IP 名称...">
-        </div>
-        <div class="filter-bar" id="filterBar">
-            <button class="filter-btn active" data-brand="all">全部</button>
+        <div class="header-actions">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜索 IP 名称...">
+            <select id="brandFilter" class="brand-filter">
+                <option value="">全部品牌</option>
+            </select>
         </div>
     </header>
 
-    <main class="gallery" id="gallery">
-        <!-- 瀑布流卡片将通过 JS 动态生成 -->
+    <!-- Gallery Grid -->
+    <main class="gallery-container">
+        <div id="gallery" class="gallery">
+            <!-- Cards will be rendered here by JavaScript -->
+        </div>
     </main>
 
-    <footer class="footer">
-        <p>更新于 <span id="updateTime">-</span></p>
-    </footer>
-
-    <!-- 详情弹窗 -->
-    <div class="modal" id="modal">
+    <!-- Modal -->
+    <div id="modal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" id="modalClose">×</button>
-            <div class="modal-image">
-                <img id="modalImg" src="" alt="">
+            <button class="modal-close">&times;</button>
+            <div class="modal-image-container">
+                <img id="modalImage" src="" alt="">
             </div>
             <div class="modal-info">
-                <h2 id="modalTitle">-</h2>
-                <p class="modal-meta" id="modalMeta">-</p>
+                <h2 id="modalName"></h2>
+                <p id="modalMeta" class="modal-meta"></p>
                 <div class="modal-divider"></div>
-                <p class="modal-desc" id="modalDesc">-</p>
+                <p id="modalDescription" class="modal-description"></p>
                 <div class="modal-divider"></div>
                 <div class="modal-actions">
-                    <button class="btn-copy" id="btnCopy">复制名称</button>
-                    <a class="btn-link" id="btnBrand" href="#" target="_blank">品牌官网</a>
-                    <a class="btn-link" id="btnOfficial" href="#" target="_blank">官网</a>
-                    <a class="btn-link" id="btnSource" href="#" target="_blank">设定</a>
+                    <button id="copyNameBtn" class="action-btn">复制名称</button>
+                    <a id="brandLink" class="action-btn" href="" target="_blank">品牌官网</a>
+                    <a id="officialLink" class="action-btn" href="" target="_blank">官网</a>
+                    <a id="sourceLink" class="action-btn" href="" target="_blank">设定</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="scripts.js"></script>
+    <!-- Toast -->
+    <div id="toast" class="toast">已复制</div>
+
+    <script src="JS/scripts.js"></script>
 </body>
 </html>
