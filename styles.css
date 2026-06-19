@@ -162,9 +162,9 @@ body {
    ======================================== */
 
 .gallery {
-    max-width: 1800px;
+    max-width: 2000px;
     margin: 0 auto;
-    padding: 16px 20px 40px;
+    padding: 16px 24px 40px;
     column-count: 5;
     column-gap: 10px;
 }
@@ -477,51 +477,53 @@ body {
 }
 
 /* ========================================
-   响应式布局
+   响应式布局 - 移动优先
    ======================================== */
 
-/* 超超大屏幕 - 7列 */
-@media (min-width: 2000px) {
-    .gallery {
-        column-count: 7;
-    }
+/* 默认 2 列 */
+.gallery {
+    column-count: 2;
+    padding: 12px;
 }
 
-/* 超大屏幕 - 6列 */
-@media (min-width: 1600px) and (max-width: 1999px) {
+/* 中等屏幕 - 3列 */
+@media (min-width: 600px) {
     .gallery {
-        column-count: 6;
-    }
-}
-
-/* 大屏幕 - 5列 */
-@media (min-width: 1200px) and (max-width: 1599px) {
-    .gallery {
-        column-count: 5;
+        column-count: 3;
+        padding: 16px;
     }
 }
 
 /* 中大屏幕 - 4列 */
-@media (min-width: 900px) and (max-width: 1199px) {
+@media (min-width: 900px) {
     .gallery {
         column-count: 4;
     }
 }
 
-/* 中等屏幕 - 3列 */
-@media (min-width: 600px) and (max-width: 899px) {
+/* 大屏幕 - 5列 */
+@media (min-width: 1200px) {
     .gallery {
-        column-count: 3;
+        column-count: 5;
     }
 }
 
-/* 小屏幕 - 2列 */
-@media (max-width: 599px) {
+/* 超大屏幕 - 6列 */
+@media (min-width: 1500px) {
     .gallery {
-        column-count: 2;
-        padding: 12px;
+        column-count: 6;
     }
-    
+}
+
+/* 超超大屏幕 - 7列 */
+@media (min-width: 1800px) {
+    .gallery {
+        column-count: 7;
+    }
+}
+
+/* 移动端布局 */
+@media (max-width: 599px) {
     .header {
         padding: 16px;
     }
@@ -553,12 +555,5 @@ body {
         margin-left: 0;
         padding-left: 0;
         border-left: none;
-    }
-}
-
-/* 超小屏幕 - 1列 */
-@media (max-width: 380px) {
-    .gallery {
-        column-count: 1;
     }
 }
