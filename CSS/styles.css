@@ -1,37 +1,31 @@
 /* ========================================
-   IP Archive Gallery - 复古像素风格 v2
-   灵感：8-bit 像素艺术 × 高级杂志排版
+   IP Archive Gallery - 复古像素风格 v3
    ======================================== */
 
 :root {
-    /* 复古配色 */
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #232323;
+    /* 深色配色 */
+    --bg-primary: #141414;
+    --bg-secondary: #1a1a1a;
     --bg-card: #1e1e1e;
-    --bg-card-hover: #2a2a2a;
+    --bg-card-hover: #252525;
     
     /* 文字色 */
     --text-primary: #e8e4dc;
     --text-secondary: #8a8680;
     --text-muted: #5a5855;
     
-    /* 强调色 - 琥珀金 */
+    /* 强调色 */
     --accent-gold: #d4a574;
     --accent-gold-dim: #a67c4a;
     --accent-green: #7cb342;
     --accent-red: #c75b5b;
     
     /* 边框 */
-    --border-main: #3a3a3a;
-    --border-light: #2d2d2d;
-    
-    /* 像素风 */
-    --pixel-size: 4px;
+    --border-main: #2d2d2d;
+    --border-light: #3a3a3a;
     
     /* 布局 */
-    --gap: 16px;
-    --columns: 4;
-    --card-max-width: 220px;
+    --gap: 14px;
 }
 
 * {
@@ -46,113 +40,103 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
-    background-image: 
-        linear-gradient(90deg, var(--border-light) 1px, transparent 1px),
-        linear-gradient(var(--border-light) 1px, transparent 1px);
-    background-size: 20px 20px;
-    background-position: center center;
 }
 
 /* ========================================
-   Header - 像素风标题
+   Header - 标题和搜索左右排列
    ======================================== */
 
 .header {
-    padding: 60px 40px 40px;
-    text-align: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--bg-primary);
-    border-bottom: 2px solid var(--border-main);
+    padding: 24px 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-main);
 }
 
-.header-content {
-    margin-bottom: 30px;
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-/* 像素风 Logo */
 .logo {
-    font-size: 32px;
+    font-size: 20px;
     font-weight: 700;
-    letter-spacing: 6px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    color: var(--accent-gold);
-    text-shadow: 
-        var(--pixel-size) var(--pixel-size) 0 var(--accent-gold-dim),
-        0 0 20px rgba(212, 165, 116, 0.3);
-}
-
-.logo-pixel {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    background: var(--accent-gold);
-    margin: 0 4px;
-    animation: pixel-blink 1s infinite;
-}
-
-@keyframes pixel-blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.5; }
-}
-
-.subtitle {
-    color: var(--text-muted);
-    font-size: 11px;
     letter-spacing: 4px;
+    color: var(--accent-gold);
     text-transform: uppercase;
+}
+
+.logo span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-left: 8px;
 }
 
 /* 搜索框 */
 .search-bar {
-    margin-bottom: 24px;
-}
-
-.search-wrapper {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-main);
-    padding: 4px;
-    max-width: 320px;
 }
 
-.search-icon {
-    padding: 0 12px;
-    color: var(--text-muted);
-    font-size: 14px;
-}
-
-.search-bar input {
-    flex: 1;
-    padding: 10px;
-    background: transparent;
-    border: none;
+.search-input {
+    width: 200px;
+    padding: 8px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-main);
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 12px;
     font-family: inherit;
+    letter-spacing: 1px;
+    transition: border-color 0.2s, width 0.3s;
 }
 
-.search-bar input:focus {
+.search-input:focus {
     outline: none;
+    border-color: var(--accent-gold-dim);
+    width: 280px;
 }
 
-.search-bar input::placeholder {
+.search-input::placeholder {
     color: var(--text-muted);
+    letter-spacing: 1px;
 }
 
-/* 筛选标签 */
+/* ========================================
+   分类导航 - 大类分组
+   ======================================== */
+
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    gap: 6px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-group + .filter-group {
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 1px solid var(--border-main);
+}
+
+.filter-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-right: 4px;
 }
 
 .filter-btn {
-    padding: 6px 14px;
-    background: var(--bg-secondary);
+    padding: 6px 12px;
+    background: transparent;
     border: 1px solid var(--border-main);
     color: var(--text-secondary);
     font-size: 11px;
@@ -164,7 +148,7 @@ body {
 
 .filter-btn:hover {
     border-color: var(--accent-gold-dim);
-    color: var(--accent-gold);
+    color: var(--text-primary);
 }
 
 .filter-btn.active {
@@ -174,14 +158,14 @@ body {
 }
 
 /* ========================================
-   Gallery - 紧凑瀑布流
+   Gallery - 响应式瀑布流
    ======================================== */
 
 .gallery {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 30px 40px 60px;
-    columns: var(--columns);
+    padding: 24px 32px 60px;
+    columns: 5 180px;
     column-gap: var(--gap);
 }
 
@@ -193,6 +177,7 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
+    overflow: hidden;
 }
 
 .card::before {
@@ -200,8 +185,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: 3px;
+    width: 3px;
+    height: 100%;
     background: var(--accent-gold-dim);
     opacity: 0;
     transition: opacity 0.2s;
@@ -210,7 +195,6 @@ body {
 .card:hover {
     background: var(--bg-card-hover);
     border-color: var(--accent-gold-dim);
-    transform: translateY(-2px);
 }
 
 .card:hover::before {
@@ -219,22 +203,24 @@ body {
 
 .card-image {
     width: 100%;
-    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
     background: var(--bg-secondary);
-    min-height: 100px;
-    max-height: 160px;
-    object-fit: cover;
 }
 
 .card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s;
 }
 
-/* 卡片信息 */
+.card:hover .card-image img {
+    transform: scale(1.05);
+}
+
 .card-info {
-    padding: 12px;
+    padding: 10px 12px;
 }
 
 .card-code {
@@ -242,16 +228,14 @@ body {
     color: var(--accent-gold-dim);
     letter-spacing: 2px;
     margin-bottom: 4px;
-    font-weight: 600;
 }
 
 .card-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
+    color: var(--text-primary);
     margin-bottom: 2px;
     cursor: pointer;
-    color: var(--text-primary);
-    transition: color 0.2s;
 }
 
 .card-name:hover {
@@ -259,22 +243,22 @@ body {
 }
 
 .card-brand {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-muted);
-    margin-bottom: 10px;
 }
 
 .card-links {
     display: flex;
-    gap: 6px;
+    gap: 4px;
+    margin-top: 8px;
 }
 
 .card-link {
-    padding: 3px 8px;
+    padding: 2px 6px;
     background: transparent;
     border: 1px solid var(--border-main);
     color: var(--text-muted);
-    font-size: 9px;
+    font-size: 8px;
     font-family: inherit;
     letter-spacing: 1px;
     text-decoration: none;
@@ -291,7 +275,7 @@ body {
 }
 
 /* ========================================
-   Modal - 复古详情弹窗
+   Modal - 详情弹窗
    ======================================== */
 
 .modal {
@@ -301,11 +285,11 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.92);
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    padding: 30px;
+    padding: 20px;
 }
 
 .modal.active {
@@ -314,8 +298,8 @@ body {
 
 .modal-content {
     background: var(--bg-card);
-    border: 2px solid var(--border-main);
-    max-width: 700px;
+    border: 1px solid var(--border-main);
+    max-width: 600px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
@@ -337,7 +321,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
 }
 
 .modal-close:hover {
@@ -348,61 +331,59 @@ body {
 
 .modal-image {
     width: 100%;
-    max-height: 300px;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
     background: var(--bg-secondary);
-    border-bottom: 2px solid var(--border-main);
+    border-bottom: 1px solid var(--border-main);
 }
 
 .modal-image img {
     width: 100%;
     height: 100%;
-    max-height: 300px;
     object-fit: contain;
 }
 
 .modal-info {
-    padding: 24px;
+    padding: 20px;
 }
 
 .modal-info h2 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 6px;
     color: var(--accent-gold);
     letter-spacing: 2px;
+    margin-bottom: 4px;
 }
 
 .modal-meta {
-    color: var(--text-muted);
     font-size: 11px;
+    color: var(--text-muted);
     letter-spacing: 2px;
-    text-transform: uppercase;
 }
 
 .modal-divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-main), transparent);
-    margin: 20px 0;
+    background: var(--border-main);
+    margin: 16px 0;
 }
 
 .modal-desc {
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.8;
 }
 
 .modal-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 8px;
+    margin-top: 16px;
 }
 
 .btn-copy,
 .btn-link {
-    padding: 8px 16px;
-    font-size: 11px;
+    padding: 8px 14px;
+    font-size: 10px;
     font-family: inherit;
     letter-spacing: 1px;
     cursor: pointer;
@@ -447,7 +428,7 @@ body {
 
 .footer {
     text-align: center;
-    padding: 40px;
+    padding: 30px;
     color: var(--text-muted);
     font-size: 10px;
     letter-spacing: 2px;
@@ -455,28 +436,20 @@ body {
     background: var(--bg-secondary);
 }
 
-.footer-pixel {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: var(--accent-gold-dim);
-    margin: 0 4px;
-}
-
 /* ========================================
-   Toast 提示
+   Toast
    ======================================== */
 
 .toast {
     position: fixed;
-    bottom: 30px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--bg-card);
     border: 1px solid var(--accent-gold);
     color: var(--text-primary);
-    padding: 10px 20px;
-    font-size: 12px;
+    padding: 8px 16px;
+    font-size: 11px;
     letter-spacing: 1px;
     opacity: 0;
     transition: opacity 0.3s;
@@ -485,78 +458,6 @@ body {
 
 .toast.show {
     opacity: 1;
-}
-
-/* ========================================
-   响应式布局
-   ======================================== */
-
-@media (max-width: 1100px) {
-    :root {
-        --columns: 3;
-    }
-}
-
-@media (max-width: 800px) {
-    :root {
-        --columns: 2;
-        --card-max-width: 180px;
-    }
-    
-    .header {
-        padding: 40px 20px 30px;
-    }
-    
-    .logo {
-        font-size: 24px;
-        letter-spacing: 4px;
-    }
-    
-    .gallery {
-        padding: 20px 20px 40px;
-    }
-    
-    .card-image {
-        max-height: 120px;
-    }
-}
-
-@media (max-width: 500px) {
-    :root {
-        --columns: 1;
-        --gap: 12px;
-    }
-    
-    .header {
-        padding: 30px 16px 20px;
-    }
-    
-    .logo {
-        font-size: 20px;
-        letter-spacing: 3px;
-    }
-    
-    .modal {
-        padding: 16px;
-    }
-    
-    .modal-info {
-        padding: 16px;
-    }
-    
-    .modal-info h2 {
-        font-size: 20px;
-    }
-    
-    .modal-actions {
-        flex-direction: column;
-    }
-    
-    .btn-copy,
-    .btn-link {
-        width: 100%;
-        text-align: center;
-    }
 }
 
 /* ========================================
@@ -570,39 +471,76 @@ body {
     column-span: all;
 }
 
-.empty-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    opacity: 0.5;
-}
-
 .empty-text {
     font-size: 12px;
     letter-spacing: 2px;
 }
 
 /* ========================================
-   加载动画 - 像素风格
+   响应式布局
    ======================================== */
 
-.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 60px;
+@media (max-width: 1200px) {
+    .gallery {
+        columns: 4 160px;
+    }
 }
 
-.loading-pixel {
-    width: 16px;
-    height: 16px;
-    background: var(--accent-gold);
-    animation: loading-bounce 0.6s infinite;
+@media (max-width: 900px) {
+    .gallery {
+        columns: 3 150px;
+        padding: 20px;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .filter-group + .filter-group {
+        margin-left: 12px;
+        padding-left: 12px;
+    }
 }
 
-.loading-pixel:nth-child(2) { animation-delay: 0.1s; }
-.loading-pixel:nth-child(3) { animation-delay: 0.2s; }
+@media (max-width: 600px) {
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .search-input:focus {
+        width: 100%;
+    }
+    
+    .filter-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .filter-group {
+        flex-wrap: wrap;
+    }
+    
+    .filter-group + .filter-group {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+    }
+    
+    .gallery {
+        columns: 2 140px;
+        column-gap: 10px;
+        padding: 16px;
+    }
+}
 
-@keyframes loading-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+@media (max-width: 400px) {
+    .gallery {
+        columns: 1;
+    }
 }

@@ -9,24 +9,16 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <h1 class="logo">
-                <span class="logo-pixel"></span>
-                IP · ARCHIVE
-            </h1>
-            <p class="subtitle">Character Collection 2026</p>
-        </div>
-        
-        <div class="search-bar">
-            <div class="search-wrapper">
-                <span class="search-icon">▸</span>
-                <input type="text" id="searchInput" placeholder="SEARCH...">
+        <div class="header-top">
+            <h1 class="logo">IP ARCHIVE <span>CHARACTER COLLECTION</span></h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="SEARCH...">
             </div>
         </div>
         
-        <div class="filter-bar" id="filterBar">
+        <nav class="filter-bar" id="filterBar">
             <!-- Filter buttons will be rendered here -->
-        </div>
+        </nav>
     </header>
 
     <!-- Gallery -->
@@ -35,11 +27,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <span class="footer-pixel"></span>
-        IP ARCHIVE
-        <span class="footer-pixel"></span>
-    </footer>
+    <footer class="footer">IP ARCHIVE 2026</footer>
 
     <!-- Modal -->
     <div id="modal" class="modal">
@@ -55,10 +43,9 @@
                 <p id="modalDescription" class="modal-desc"></p>
                 <div class="modal-divider"></div>
                 <div class="modal-actions">
-                    <button id="copyNameBtn" class="btn-copy">COPY NAME</button>
+                    <button id="copyNameBtn" class="btn-copy">COPY</button>
                     <a id="brandLink" class="btn-link" href="" target="_blank">BRAND</a>
                     <a id="officialLink" class="btn-link" href="" target="_blank">OFFICIAL</a>
-                    <a id="sourceLink" class="btn-link" href="" target="_blank">SOURCE</a>
                 </div>
             </div>
         </div>

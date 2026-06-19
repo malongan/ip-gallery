@@ -1,14 +1,22 @@
 /**
- * IP Archive - Gallery Scripts v2
- * 复古像素风格
+ * IP Archive - Gallery Scripts v3
+ * 复古像素风格 · 大类分类
  */
 
-// Data URL (CI will auto-generate this)
+// Data URL
 const DATA_URL = 'data.json';
 
 // State
 let allIPs = [];
 let currentFilter = 'all';
+
+// 分类配置
+const CATEGORIES = {
+    'all': { label: 'ALL', ips: [] },
+    'character': { label: '卡通人物', ips: [] },
+    'product': { label: '商品', ips: [] },
+    'personal': { label: '个人IP', ips: [] }
+};
 
 /**
  * Initialize the gallery
@@ -16,14 +24,14 @@ let currentFilter = 'all';
 async function init() {
     try {
         await loadData();
-        renderBrandFilter();
+        setupCategories();
+        renderFilterBar();
         renderGallery();
         setupEventListeners();
     } catch (error) {
         console.error('Failed to load gallery data:', error);
         document.getElementById('gallery').innerHTML = `
             <div class="empty">
-                <div class="empty-icon">▣</div>
                 <div class="empty-text">LOADING FAILED</div>
             </div>
         `;
@@ -43,19 +51,66 @@ async function loadData() {
 }
 
 /**
- * Render brand filter buttons
+ * Setup category filters based on IP data
  */
-function renderBrandFilter() {
-    const brands = [...new Set(allIPs.map(ip => ip.brand).filter(Boolean))];
+function setupCategories() {
+    // 卡通人物
+    CATEGORIES['character'].ips = allIPs.filter(ip => {
+        const brand = (ip.brand || '').toLowerCase();
+        return ['芒果tv', '爱奇艺', '百度网盘'].some(b => brand.includes(b));
+    }).map(ip => ip.id);
+    
+    // 商品
+    CATEGORIES['product'].ips = allIPs.filter(ip => {
+        const type = (ip.type || '').toLowerCase();
+        const brand = (ip.brand || '').toLowerCase();
+        return type.includes('商品') || brand.includes('古茗');
+    }).map(ip => ip.id);
+    
+    // 个人IP
+    CATEGORIES['personal'].ips = allIPs.filter(ip => {
+        const brand = (ip.brand || '').toLowerCase();
+        return brand.includes('个人') || !['芒果tv', '爱奇艺', '百度网盘', '古茗'].some(b => brand.includes(b));
+    }).map(ip => ip.id);
+    
+    // All
+    CATEGORIES['all'].ips = allIPs.map(ip => ip.id);
+}
+
+/**
+ * Render filter bar with categories
+ */
+function renderFilterBar() {
     const filterBar = document.getElementById('filterBar');
     
-    // All button
-    let html = `<button class="filter-btn active" data-brand="all">ALL</button>`;
+    let html = '';
     
-    // Brand buttons
-    brands.forEach(brand => {
-        html += `<button class="filter-btn" data-brand="${brand}">${brand}</button>`;
+    // Main categories
+    const mainCategories = ['all', 'character', 'product', 'personal'];
+    
+    mainCategories.forEach(key => {
+        const cat = CATEGORIES[key];
+        if (cat.ips.length > 0 || key === 'all') {
+            html += `
+                <div class="filter-group">
+                    <span class="filter-label">${key === 'all' ? '' : ''}</span>
+                    <button class="filter-btn ${key === 'all' ? 'active' : ''}" data-filter="${key}">
+                        ${cat.label}
+                    </button>
+                </div>
+            `;
+        }
     });
+    
+    // Brand filters
+    const brands = [...new Set(allIPs.map(ip => ip.brand).filter(Boolean))];
+    if (brands.length > 0) {
+        html += `<div class="filter-group">`;
+        brands.slice(0, 4).forEach(brand => {
+            html += `<button class="filter-btn" data-filter="brand:${brand}">${brand}</button>`;
+        });
+        html += `</div>`;
+    }
     
     filterBar.innerHTML = html;
 }
@@ -78,16 +133,21 @@ function renderGallery() {
         );
     }
     
-    // Brand filter
+    // Category filter
     if (currentFilter !== 'all') {
-        filteredIPs = filteredIPs.filter(ip => ip.brand === currentFilter);
+        if (currentFilter.startsWith('brand:')) {
+            const brand = currentFilter.replace('brand:', '');
+            filteredIPs = filteredIPs.filter(ip => ip.brand === brand);
+        } else {
+            const categoryIPs = CATEGORIES[currentFilter]?.ips || [];
+            filteredIPs = filteredIPs.filter(ip => categoryIPs.includes(ip.id));
+        }
     }
     
     // Empty state
     if (filteredIPs.length === 0) {
         gallery.innerHTML = `
             <div class="empty">
-                <div class="empty-icon">▣</div>
                 <div class="empty-text">NO RESULTS</div>
             </div>
         `;
@@ -107,7 +167,6 @@ function renderGallery() {
                 <div class="card-links">
                     ${ip.brand_url ? `<a class="card-link" href="${ip.brand_url}" target="_blank">BRAND</a>` : ''}
                     ${ip.official_url ? `<a class="card-link" href="${ip.official_url}" target="_blank">OFFICIAL</a>` : ''}
-                    ${ip.source_url ? `<a class="card-link" href="${ip.source_url}" target="_blank">SOURCE</a>` : ''}
                 </div>
             </div>
         </article>
@@ -121,7 +180,7 @@ function setupEventListeners() {
     // Search input
     document.getElementById('searchInput').addEventListener('input', debounce(renderGallery, 200));
     
-    // Brand filter buttons
+    // Filter buttons
     document.getElementById('filterBar').addEventListener('click', (e) => {
         if (e.target.classList.contains('filter-btn')) {
             // Update active state
@@ -129,22 +188,20 @@ function setupEventListeners() {
             e.target.classList.add('active');
             
             // Update filter
-            currentFilter = e.target.dataset.brand;
+            currentFilter = e.target.dataset.filter;
             renderGallery();
         }
     });
     
-    // Card click - open modal or copy name
+    // Card click
     document.getElementById('gallery').addEventListener('click', (e) => {
         const card = e.target.closest('.card');
         const nameBtn = e.target.closest('.card-name');
         const linkBtn = e.target.closest('.card-link');
         
-        // If clicked on a link, don't open modal
         if (linkBtn) return;
         
         if (nameBtn) {
-            // Copy name
             e.stopPropagation();
             copyToClipboard(nameBtn.dataset.name);
             return;
@@ -167,18 +224,17 @@ function setupEventListeners() {
         }
     });
     
-    // Copy name button in modal
+    // Copy button
     document.getElementById('copyNameBtn').addEventListener('click', () => {
         const name = document.getElementById('modalName').textContent;
         copyToClipboard(name);
         
-        // Visual feedback
         const btn = document.getElementById('copyNameBtn');
         btn.classList.add('copied');
         btn.textContent = 'COPIED!';
         setTimeout(() => {
             btn.classList.remove('copied');
-            btn.textContent = 'COPY NAME';
+            btn.textContent = 'COPY';
         }, 1500);
     });
     
@@ -196,21 +252,15 @@ function setupEventListeners() {
 function openModal(ip) {
     const modal = document.getElementById('modal');
     
-    // Set image
     document.getElementById('modalImage').src = ip.preview || '';
     document.getElementById('modalImage').alt = ip.name;
-    
-    // Set info
     document.getElementById('modalName').textContent = ip.name;
     document.getElementById('modalMeta').textContent = `${ip.brand || ''} · ${ip.code || ''}`;
-    
-    // Set description
     document.getElementById('modalDescription').textContent = ip.description || 'No description available.';
     
-    // Set links
+    // Links
     const brandLink = document.getElementById('brandLink');
     const officialLink = document.getElementById('officialLink');
-    const sourceLink = document.getElementById('sourceLink');
     
     if (ip.brand_url) {
         brandLink.href = ip.brand_url;
@@ -226,14 +276,6 @@ function openModal(ip) {
         officialLink.classList.add('hidden');
     }
     
-    if (ip.source_url) {
-        sourceLink.href = ip.source_url;
-        sourceLink.classList.remove('hidden');
-    } else {
-        sourceLink.classList.add('hidden');
-    }
-    
-    // Show modal
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -242,8 +284,7 @@ function openModal(ip) {
  * Close modal
  */
 function closeModal() {
-    const modal = document.getElementById('modal');
-    modal.classList.remove('active');
+    document.getElementById('modal').classList.remove('active');
     document.body.style.overflow = '';
 }
 
@@ -255,7 +296,6 @@ async function copyToClipboard(text) {
         await navigator.clipboard.writeText(text);
         showToast('COPIED');
     } catch (err) {
-        // Fallback
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.style.position = 'fixed';
@@ -275,10 +315,7 @@ function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 1500);
+    setTimeout(() => toast.classList.remove('show'), 1500);
 }
 
 /**
@@ -287,14 +324,10 @@ function showToast(message) {
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func(...args), wait);
     };
 }
 
-// Initialize on DOM ready
+// Initialize
 document.addEventListener('DOMContentLoaded', init);
