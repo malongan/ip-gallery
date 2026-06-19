@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Archive</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">IP · ARCHIVE</h1>
+            <p class="subtitle">2026</p>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="搜索 IP 名称...">
+        </div>
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-brand="all">全部</button>
+        </div>
+    </header>
+
+    <main class="gallery" id="gallery">
+        <!-- 瀑布流卡片将通过 JS 动态生成 -->
+    </main>
+
+    <footer class="footer">
+        <p>更新于 <span id="updateTime">-</span></p>
+    </footer>
+
+    <!-- 详情弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">×</button>
+            <div class="modal-image">
+                <img id="modalImg" src="" alt="">
+            </div>
+            <div class="modal-info">
+                <h2 id="modalTitle">-</h2>
+                <p class="modal-meta" id="modalMeta">-</p>
+                <div class="modal-divider"></div>
+                <p class="modal-desc" id="modalDesc">-</p>
+                <div class="modal-divider"></div>
+                <div class="modal-actions">
+                    <button class="btn-copy" id="btnCopy">复制名称</button>
+                    <a class="btn-link" id="btnBrand" href="#" target="_blank">品牌官网</a>
+                    <a class="btn-link" id="btnOfficial" href="#" target="_blank">官网</a>
+                    <a class="btn-link" id="btnSource" href="#" target="_blank">设定</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

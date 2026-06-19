@@ -1,0 +1,65 @@
+{
+  "updated": "2026-06-19",
+  "ips": [
+    {
+      "id": "lili",
+      "name": "莉莉",
+      "brand": "个人IP",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/lili_preview.png",
+      "description": "个人原创IP形象，可爱活泼风格，适合各类电商活动设计。"
+    },
+    {
+      "id": "mangguozai",
+      "name": "芒果仔",
+      "brand": "芒果TV",
+      "brand_url": "https://www.mgtv.com/",
+      "official_url": "https://www.iqiyi.com/",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/mangguozai_preview.png",
+      "description": "芒果TV会员形象大使，活泼可爱的品牌公仔形象。"
+    },
+    {
+      "id": "yunyi",
+      "name": "云一朵",
+      "brand": "个人IP",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/yunyi_preview.png",
+      "description": "个人创作的原创IP形象，清新自然的风格。"
+    },
+    {
+      "id": "guming_moli",
+      "name": "古茗云岭茉莉",
+      "brand": "古茗",
+      "brand_url": "https://www.gumingnc.com/",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/guming_moli_preview.png",
+      "description": "古茗茶饮品牌IP形象，茉莉花茶主题，清新自然。"
+    },
+    {
+      "id": "maqi",
+      "name": "马奇",
+      "brand": "个人IP",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/maqi_preview.png",
+      "description": "小朋友角色形象，用于各类海报设计。"
+    },
+    {
+      "id": "mihouzi",
+      "name": "猕猴仔",
+      "brand": "爱奇艺",
+      "brand_url": "https://www.iqiyi.com/",
+      "official_url": "https://vip.iqiyi.com/",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/mihouzi_preview.png",
+      "description": "爱奇艺视频会员形象大使，科技感与可爱并存。"
+    }
+  ]
+}

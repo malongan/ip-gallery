@@ -1,0 +1,458 @@
+/* ========================================
+   IP Archive Gallery - 瀑布流画廊风格
+   ======================================== */
+
+:root {
+    --bg-color: #0a0a0a;
+    --card-bg: #141414;
+    --card-hover: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --accent: #ff6b35;
+    --border-color: #2a2a2a;
+    --gap: 20px;
+    --columns: 4;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Header
+   ======================================== */
+
+.header {
+    padding: 60px 40px 40px;
+    text-align: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header-content {
+    margin-bottom: 40px;
+}
+
+.logo {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 8px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    letter-spacing: 4px;
+}
+
+.search-bar {
+    margin-bottom: 30px;
+}
+
+.search-bar input {
+    width: 100%;
+    max-width: 400px;
+    padding: 14px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-bar input::placeholder {
+    color: var(--text-secondary);
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+/* ========================================
+   Gallery - 瀑布流布局
+   ======================================== */
+
+.gallery {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px 60px;
+    columns: var(--columns);
+    column-gap: var(--gap);
+}
+
+.card {
+    break-inside: avoid;
+    margin-bottom: var(--gap);
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.card-image {
+    width: 100%;
+    display: block;
+    background: #1a1a1a;
+    min-height: 150px;
+}
+
+.card-info {
+    padding: 16px;
+}
+
+.card-code {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+}
+
+.card-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.card-name:hover {
+    color: var(--accent);
+}
+
+.card-brand {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.card-links {
+    display: flex;
+    gap: 8px;
+}
+
+.card-link {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.card-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.card-link.hidden {
+    display: none;
+}
+
+/* ========================================
+   Modal - 详情弹窗
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background 0.3s;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-image {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+
+.modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.modal-info {
+    padding: 30px;
+}
+
+.modal-info h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.modal-meta {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.modal-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 24px 0;
+}
+
+.modal-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-copy,
+.btn-link {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.btn-copy {
+    background: var(--accent);
+    border: none;
+    color: white;
+}
+
+.btn-copy:hover {
+    background: #ff5722;
+}
+
+.btn-copy.copied {
+    background: #4caf50;
+}
+
+.btn-link {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.btn-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-link.hidden {
+    display: none;
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+.footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* ========================================
+   复制提示
+   ======================================== */
+
+.toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg);
+    border: 1px solid var(--accent);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 2000;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* ========================================
+   响应式布局
+   ======================================== */
+
+@media (max-width: 1200px) {
+    :root {
+        --columns: 3;
+    }
+}
+
+@media (max-width: 900px) {
+    :root {
+        --columns: 2;
+    }
+    
+    .header {
+        padding: 40px 20px 30px;
+    }
+    
+    .logo {
+        font-size: 36px;
+    }
+    
+    .gallery {
+        padding: 0 20px 40px;
+    }
+}
+
+@media (max-width: 600px) {
+    :root {
+        --columns: 1;
+        --gap: 16px;
+    }
+    
+    .header {
+        padding: 30px 16px 20px;
+    }
+    
+    .logo {
+        font-size: 28px;
+        letter-spacing: 4px;
+    }
+    
+    .modal {
+        padding: 20px;
+    }
+    
+    .modal-info {
+        padding: 20px;
+    }
+    
+    .modal-info h2 {
+        font-size: 22px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .btn-copy,
+    .btn-link {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ========================================
+   空状态
+   ======================================== */
+
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-text {
+    font-size: 16px;
+}
