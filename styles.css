@@ -1,17 +1,37 @@
 /* ========================================
-   IP Archive Gallery - 瀑布流画廊风格
+   IP Archive Gallery - 复古像素风格 v2
+   灵感：8-bit 像素艺术 × 高级杂志排版
    ======================================== */
 
 :root {
-    --bg-color: #0a0a0a;
-    --card-bg: #141414;
-    --card-hover: #1a1a1a;
-    --text-primary: #ffffff;
-    --text-secondary: #888888;
-    --accent: #ff6b35;
-    --border-color: #2a2a2a;
-    --gap: 20px;
+    /* 复古配色 */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #232323;
+    --bg-card: #1e1e1e;
+    --bg-card-hover: #2a2a2a;
+    
+    /* 文字色 */
+    --text-primary: #e8e4dc;
+    --text-secondary: #8a8680;
+    --text-muted: #5a5855;
+    
+    /* 强调色 - 琥珀金 */
+    --accent-gold: #d4a574;
+    --accent-gold-dim: #a67c4a;
+    --accent-green: #7cb342;
+    --accent-red: #c75b5b;
+    
+    /* 边框 */
+    --border-main: #3a3a3a;
+    --border-light: #2d2d2d;
+    
+    /* 像素风 */
+    --pixel-size: 4px;
+    
+    /* 布局 */
+    --gap: 16px;
     --columns: 4;
+    --card-max-width: 220px;
 }
 
 * {
@@ -21,103 +41,146 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg-color);
+    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
+    background-image: 
+        linear-gradient(90deg, var(--border-light) 1px, transparent 1px),
+        linear-gradient(var(--border-light) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: center center;
 }
 
 /* ========================================
-   Header
+   Header - 像素风标题
    ======================================== */
 
 .header {
     padding: 60px 40px 40px;
     text-align: center;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--border-main);
 }
 
 .header-content {
-    margin-bottom: 40px;
-}
-
-.logo {
-    font-size: 48px;
-    font-weight: 700;
-    letter-spacing: 8px;
-    margin-bottom: 8px;
-}
-
-.subtitle {
-    color: var(--text-secondary);
-    font-size: 14px;
-    letter-spacing: 4px;
-}
-
-.search-bar {
     margin-bottom: 30px;
 }
 
-.search-bar input {
-    width: 100%;
-    max-width: 400px;
-    padding: 14px 20px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-primary);
+/* 像素风 Logo */
+.logo {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    text-shadow: 
+        var(--pixel-size) var(--pixel-size) 0 var(--accent-gold-dim),
+        0 0 20px rgba(212, 165, 116, 0.3);
+}
+
+.logo-pixel {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: var(--accent-gold);
+    margin: 0 4px;
+    animation: pixel-blink 1s infinite;
+}
+
+@keyframes pixel-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+/* 搜索框 */
+.search-bar {
+    margin-bottom: 24px;
+}
+
+.search-wrapper {
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-main);
+    padding: 4px;
+    max-width: 320px;
+}
+
+.search-icon {
+    padding: 0 12px;
+    color: var(--text-muted);
     font-size: 14px;
-    transition: border-color 0.3s;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
 }
 
 .search-bar input:focus {
     outline: none;
-    border-color: var(--accent);
 }
 
 .search-bar input::placeholder {
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 
+/* 筛选标签 */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .filter-btn {
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
+    padding: 6px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-main);
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: 11px;
+    font-family: inherit;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 .filter-btn:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
+    border-color: var(--accent-gold-dim);
+    color: var(--accent-gold);
 }
 
 .filter-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: var(--bg-primary);
 }
 
 /* ========================================
-   Gallery - 瀑布流布局
+   Gallery - 紧凑瀑布流
    ======================================== */
 
 .gallery {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 40px 60px;
+    padding: 30px 40px 60px;
     columns: var(--columns);
     column-gap: var(--gap);
 }
@@ -125,73 +188,102 @@ body {
 .card {
     break-inside: avoid;
     margin-bottom: var(--gap);
-    background: var(--card-bg);
-    border-radius: 12px;
-    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border-main);
     cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gold-dim);
+    opacity: 0;
+    transition: opacity 0.2s;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    background: var(--bg-card-hover);
+    border-color: var(--accent-gold-dim);
+    transform: translateY(-2px);
+}
+
+.card:hover::before {
+    opacity: 1;
 }
 
 .card-image {
     width: 100%;
     display: block;
-    background: #1a1a1a;
-    min-height: 150px;
+    background: var(--bg-secondary);
+    min-height: 100px;
+    max-height: 160px;
+    object-fit: cover;
 }
 
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 卡片信息 */
 .card-info {
-    padding: 16px;
+    padding: 12px;
 }
 
 .card-code {
-    font-size: 11px;
-    color: var(--accent);
+    font-size: 9px;
+    color: var(--accent-gold-dim);
     letter-spacing: 2px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    font-weight: 600;
 }
 
 .card-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     cursor: pointer;
-    transition: color 0.3s;
+    color: var(--text-primary);
+    transition: color 0.2s;
 }
 
 .card-name:hover {
-    color: var(--accent);
+    color: var(--accent-gold);
 }
 
 .card-brand {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
 }
 
 .card-links {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .card-link {
-    padding: 4px 10px;
+    padding: 3px 8px;
     background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    color: var(--text-secondary);
-    font-size: 11px;
+    border: 1px solid var(--border-main);
+    color: var(--text-muted);
+    font-size: 9px;
+    font-family: inherit;
+    letter-spacing: 1px;
     text-decoration: none;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 .card-link:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
 }
 
 .card-link.hidden {
@@ -199,7 +291,7 @@ body {
 }
 
 /* ========================================
-   Modal - 详情弹窗
+   Modal - 复古详情弹窗
    ======================================== */
 
 .modal {
@@ -209,11 +301,11 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95);
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 30px;
 }
 
 .modal.active {
@@ -221,116 +313,128 @@ body {
 }
 
 .modal-content {
-    background: var(--card-bg);
-    border-radius: 16px;
-    max-width: 900px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-main);
+    max-width: 700px;
     width: 100%;
-    max-height: 90vh;
+    max-height: 85vh;
     overflow-y: auto;
     position: relative;
-    display: flex;
-    flex-direction: column;
 }
 
 .modal-close {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 50%;
-    color: white;
-    font-size: 24px;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-main);
+    color: var(--text-secondary);
+    font-size: 16px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 10;
 }
 
 .modal-close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+    color: white;
 }
 
 .modal-image {
     width: 100%;
-    max-height: 400px;
+    max-height: 300px;
     overflow: hidden;
-    background: #1a1a1a;
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--border-main);
 }
 
 .modal-image img {
     width: 100%;
     height: 100%;
+    max-height: 300px;
     object-fit: contain;
 }
 
 .modal-info {
-    padding: 30px;
+    padding: 24px;
 }
 
 .modal-info h2 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    color: var(--accent-gold);
+    letter-spacing: 2px;
 }
 
 .modal-meta {
-    color: var(--text-secondary);
-    font-size: 14px;
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .modal-divider {
     height: 1px;
-    background: var(--border-color);
-    margin: 24px 0;
+    background: linear-gradient(90deg, transparent, var(--border-main), transparent);
+    margin: 20px 0;
 }
 
 .modal-desc {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.8;
 }
 
 .modal-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .btn-copy,
 .btn-link {
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 13px;
+    padding: 8px 16px;
+    font-size: 11px;
+    font-family: inherit;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     text-decoration: none;
+    border: 1px solid var(--border-main);
 }
 
 .btn-copy {
-    background: var(--accent);
-    border: none;
-    color: white;
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: var(--bg-primary);
 }
 
 .btn-copy:hover {
-    background: #ff5722;
+    background: var(--accent-gold-dim);
+    border-color: var(--accent-gold-dim);
 }
 
 .btn-copy.copied {
-    background: #4caf50;
+    background: var(--accent-green);
+    border-color: var(--accent-green);
 }
 
 .btn-link {
     background: transparent;
-    border: 1px solid var(--border-color);
     color: var(--text-secondary);
 }
 
 .btn-link:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
 }
 
 .btn-link.hidden {
@@ -344,25 +448,36 @@ body {
 .footer {
     text-align: center;
     padding: 40px;
-    color: var(--text-secondary);
-    font-size: 13px;
+    color: var(--text-muted);
+    font-size: 10px;
+    letter-spacing: 2px;
+    border-top: 1px solid var(--border-main);
+    background: var(--bg-secondary);
+}
+
+.footer-pixel {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-gold-dim);
+    margin: 0 4px;
 }
 
 /* ========================================
-   复制提示
+   Toast 提示
    ======================================== */
 
 .toast {
     position: fixed;
-    bottom: 40px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--card-bg);
-    border: 1px solid var(--accent);
+    background: var(--bg-card);
+    border: 1px solid var(--accent-gold);
     color: var(--text-primary);
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 10px 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 2000;
@@ -376,15 +491,16 @@ body {
    响应式布局
    ======================================== */
 
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
     :root {
         --columns: 3;
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
     :root {
         --columns: 2;
+        --card-max-width: 180px;
     }
     
     .header {
@@ -392,18 +508,23 @@ body {
     }
     
     .logo {
-        font-size: 36px;
+        font-size: 24px;
+        letter-spacing: 4px;
     }
     
     .gallery {
-        padding: 0 20px 40px;
+        padding: 20px 20px 40px;
+    }
+    
+    .card-image {
+        max-height: 120px;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 500px) {
     :root {
         --columns: 1;
-        --gap: 16px;
+        --gap: 12px;
     }
     
     .header {
@@ -411,20 +532,20 @@ body {
     }
     
     .logo {
-        font-size: 28px;
-        letter-spacing: 4px;
+        font-size: 20px;
+        letter-spacing: 3px;
     }
     
     .modal {
-        padding: 20px;
+        padding: 16px;
     }
     
     .modal-info {
-        padding: 20px;
+        padding: 16px;
     }
     
     .modal-info h2 {
-        font-size: 22px;
+        font-size: 20px;
     }
     
     .modal-actions {
@@ -444,15 +565,44 @@ body {
 
 .empty {
     text-align: center;
-    padding: 80px 20px;
-    color: var(--text-secondary);
+    padding: 60px 20px;
+    color: var(--text-muted);
+    column-span: all;
 }
 
 .empty-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.5;
 }
 
 .empty-text {
-    font-size: 16px;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+/* ========================================
+   加载动画 - 像素风格
+   ======================================== */
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+}
+
+.loading-pixel {
+    width: 16px;
+    height: 16px;
+    background: var(--accent-gold);
+    animation: loading-bounce 0.6s infinite;
+}
+
+.loading-pixel:nth-child(2) { animation-delay: 0.1s; }
+.loading-pixel:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes loading-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }

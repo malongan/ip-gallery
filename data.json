@@ -2,70 +2,70 @@
   "updated": "2026-06-19",
   "ips": [
     {
-      "id": "lili",
+      "id": "guming_moli",
       "code": "IP001",
+      "name": "古茗云岭茉莉",
+      "brand": "古茗",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/guming_moli_preview.png",
+      "description": "古茗云岭茉莉 - 冷凝水珠、冰爽感、新鲜清澈"
+    },
+    {
+      "id": "lili",
+      "code": "IP002",
       "name": "莉莉",
       "brand": "个人IP",
       "brand_url": "",
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/lili_preview.png",
-      "description": "个人原创IP形象，可爱活泼风格，适合各类电商活动。"
+      "description": "莉莉 - 童趣可爱、活泼开朗"
     },
     {
       "id": "mangguozai",
-      "code": "IP002",
+      "code": "IP003",
       "name": "芒果仔",
       "brand": "芒果TV",
-      "brand_url": "https://www.mgtv.com/",
-      "official_url": "https://www.iqiyi.com/",
-      "source_url": "",
-      "preview": "https://malongan.github.io/ip-gallery/images/mangguozai_preview.png",
-      "description": "芒果TV会员形象大使，可爱芒果主题角色。"
-    },
-    {
-      "id": "yunyi",
-      "code": "IP003",
-      "name": "云一朵",
-      "brand": "个人IP",
       "brand_url": "",
       "official_url": "",
       "source_url": "",
-      "preview": "https://malongan.github.io/ip-gallery/images/yunyi_preview.png",
-      "description": "个人原创IP形象，云朵主题，清新治愈风格。"
-    },
-    {
-      "id": "guming_moli",
-      "code": "IP004",
-      "name": "古茗云岭茉莉",
-      "brand": "古茗",
-      "brand_url": "https://www.gumingnc.com/",
-      "official_url": "",
-      "source_url": "",
-      "preview": "https://malongan.github.io/ip-gallery/images/guming_moli_preview.png",
-      "description": "古茗茶饮品牌IP，云岭茉莉花茶联名形象。"
+      "preview": "https://malongan.github.io/ip-gallery/images/mangguozai_preview.png",
+      "description": "芒果仔 - 科技感、阳光活力"
     },
     {
       "id": "maqi",
-      "code": "IP005",
+      "code": "IP004",
       "name": "马奇",
       "brand": "个人IP",
       "brand_url": "",
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/maqi_preview.png",
-      "description": "个人原创IP形象，小朋友角色，用于各类海报设计。"
+      "description": "马奇 - 小朋友角色、活泼可爱"
     },
     {
       "id": "mihouzi",
-      "code": "IP006",
+      "code": "IP005",
       "name": "猕猴仔",
       "brand": "爱奇艺",
-      "brand_url": "https://www.iqiyi.com/",
+      "brand_url": "",
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/mihouzi_preview.png",
-      "description": "爱奇艺视频会员形象大使，猕猴桃主题品牌公仔。"
+      "description": "猕猴仔 - 猕猴桃色、圆润可爱、科技感"
+    },
+    {
+      "id": "yunyi",
+      "code": "IP006",
+      "name": "云一朵",
+      "brand": "百度网盘",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/yunyi_preview.png",
+      "description": "云一朵 - 动漫可爱、小孩Q版"
     }
   ]
 }

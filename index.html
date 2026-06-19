@@ -9,50 +9,63 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-title">
-            <h1>IP · ARCHIVE</h1>
-            <p class="header-subtitle">2026</p>
+        <div class="header-content">
+            <h1 class="logo">
+                <span class="logo-pixel"></span>
+                IP · ARCHIVE
+            </h1>
+            <p class="subtitle">Character Collection 2026</p>
         </div>
-        <div class="header-actions">
-            <input type="text" id="searchInput" class="search-input" placeholder="搜索 IP 名称...">
-            <select id="brandFilter" class="brand-filter">
-                <option value="">全部品牌</option>
-            </select>
+        
+        <div class="search-bar">
+            <div class="search-wrapper">
+                <span class="search-icon">▸</span>
+                <input type="text" id="searchInput" placeholder="SEARCH...">
+            </div>
+        </div>
+        
+        <div class="filter-bar" id="filterBar">
+            <!-- Filter buttons will be rendered here -->
         </div>
     </header>
 
-    <!-- Gallery Grid -->
-    <main class="gallery-container">
-        <div id="gallery" class="gallery">
-            <!-- Cards will be rendered here by JavaScript -->
-        </div>
+    <!-- Gallery -->
+    <main class="gallery" id="gallery">
+        <!-- Cards will be rendered here -->
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <span class="footer-pixel"></span>
+        IP ARCHIVE
+        <span class="footer-pixel"></span>
+    </footer>
 
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <button class="modal-close">&times;</button>
-            <div class="modal-image-container">
+            <button class="modal-close">×</button>
+            <div class="modal-image">
                 <img id="modalImage" src="" alt="">
             </div>
             <div class="modal-info">
                 <h2 id="modalName"></h2>
                 <p id="modalMeta" class="modal-meta"></p>
                 <div class="modal-divider"></div>
-                <p id="modalDescription" class="modal-description"></p>
+                <p id="modalDescription" class="modal-desc"></p>
                 <div class="modal-divider"></div>
                 <div class="modal-actions">
-                    <button id="copyNameBtn" class="action-btn">复制名称</button>
-                    <a id="brandLink" class="action-btn" href="" target="_blank">品牌官网</a>
-                    <a id="officialLink" class="action-btn" href="" target="_blank">官网</a>
-                    <a id="sourceLink" class="action-btn" href="" target="_blank">设定</a>
+                    <button id="copyNameBtn" class="btn-copy">COPY NAME</button>
+                    <a id="brandLink" class="btn-link" href="" target="_blank">BRAND</a>
+                    <a id="officialLink" class="btn-link" href="" target="_blank">OFFICIAL</a>
+                    <a id="sourceLink" class="btn-link" href="" target="_blank">SOURCE</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="toast">已复制</div>
+    <div id="toast" class="toast">COPIED</div>
 
     <script src="JS/scripts.js"></script>
 </body>
