@@ -165,7 +165,6 @@ body {
     max-width: 2000px;
     margin: 0 auto;
     padding: 16px 24px 40px;
-    column-count: 5;
     column-gap: 10px;
 }
 
