@@ -480,26 +480,43 @@ body {
    响应式布局
    ======================================== */
 
-@media (max-width: 1400px) {
+/* 超大屏幕 */
+@media (min-width: 1600px) {
+    .gallery {
+        column-count: 6;
+    }
+}
+
+/* 大屏幕 */
+@media (min-width: 1200px) and (max-width: 1599px) {
+    .gallery {
+        column-count: 5;
+    }
+}
+
+/* 中大屏幕 */
+@media (min-width: 900px) and (max-width: 1199px) {
     .gallery {
         column-count: 4;
     }
 }
 
-@media (max-width: 1100px) {
+/* 中等屏幕 */
+@media (min-width: 600px) and (max-width: 899px) {
     .gallery {
         column-count: 3;
     }
 }
 
-@media (max-width: 768px) {
+/* 小屏幕 */
+@media (max-width: 599px) {
     .gallery {
         column-count: 2;
-        padding: 16px;
+        padding: 12px;
     }
     
     .header {
-        padding: 16px 20px;
+        padding: 16px;
     }
     
     .header-top {
@@ -532,7 +549,8 @@ body {
     }
 }
 
-@media (max-width: 480px) {
+/* 超小屏幕 */
+@media (max-width: 380px) {
     .gallery {
         column-count: 1;
     }
