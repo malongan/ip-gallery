@@ -1,15 +1,11 @@
 /**
- * IP Archive - Gallery Scripts v4
- * 复古像素风 · 编辑模式
+ * IP Archive - Gallery Scripts v5
  */
 
 const DATA_URL = 'data.json';
-const OVERRIDES_KEY = 'ip-gallery-edits';
 
 let allIPs = [];
 let currentFilter = 'all';
-let editModeIP = null; // IP being edited
-let localOverrides = {}; // localStorage overrides
 
 const CATEGORIES = {
     'all': { label: 'ALL', ips: [] },
@@ -21,7 +17,6 @@ const CATEGORIES = {
 // ═══ Init ═══
 async function init() {
     try {
-        loadOverrides();
         await loadData();
         setupCategories();
         renderFilterBar();
@@ -37,53 +32,12 @@ async function init() {
     }
 }
 
-// ═══ LocalStorage Overrides ═══
-function loadOverrides() {
-    try {
-        const saved = localStorage.getItem(OVERRIDES_KEY);
-        localOverrides = saved ? JSON.parse(saved) : {};
-    } catch(e) {
-        localOverrides = {};
-    }
-}
-
-function saveOverrides() {
-    localStorage.setItem(OVERRIDES_KEY, JSON.stringify(localOverrides));
-}
-
-function getOverride(ipId, field) {
-    return localOverrides[ipId]?.[field];
-}
-
-function setOverride(ipId, field, value) {
-    if (!localOverrides[ipId]) localOverrides[ipId] = {};
-    if (value === '' || value === null || value === undefined) {
-        delete localOverrides[ipId][field];
-        if (Object.keys(localOverrides[ipId]).length === 0) {
-            delete localOverrides[ipId];
-        }
-    } else {
-        localOverrides[ipId][field] = value;
-    }
-    saveOverrides();
-}
-
 // ═══ Load Data ═══
 async function loadData() {
     const response = await fetch(DATA_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     allIPs = data.ips || [];
-
-    // Apply overrides
-    allIPs.forEach(ip => {
-        const ov = localOverrides[ip.id];
-        if (ov) {
-            Object.keys(ov).forEach(key => {
-                ip[key] = ov[key];
-            });
-        }
-    });
 
     const versionTag = document.getElementById('versionTag');
     if (versionTag && data.version) {
@@ -244,34 +198,10 @@ function setupEventListeners() {
         }, 1500);
     });
 
-    // Edit button
-    document.getElementById('editBtn').addEventListener('click', toggleEditMode);
-
-    // Save edits
-    document.getElementById('saveEditBtn').addEventListener('click', saveEdits);
-
-    // Cancel edits
-    document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
-
-    // Upload image button
-    document.getElementById('uploadBtn').addEventListener('click', handleUpload);
-
     // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeModal();
     });
-
-    // Admin unlock: click version tag 3 times
-    const vtag = document.getElementById('versionTag');
-    if (vtag) {
-        vtag.style.cursor = 'pointer';
-        vtag.addEventListener('click', () => {
-            adminClickCount++;
-            if (adminClickCount >= 3 && !adminUnlocked) {
-                unlockAdmin();
-            }
-        });
-    }
 }
 
 // ═══ Modal ═══
@@ -311,125 +241,6 @@ function openModal(ip) {
 function closeModal() {
     document.getElementById('modal').classList.remove('active');
     document.body.style.overflow = '';
-    editModeIP = null;
-}
-
-// ═══ Admin Unlock ═══
-let adminClickCount = 0;
-let adminUnlocked = false;
-
-function unlockAdmin() {
-    adminUnlocked = true;
-    document.getElementById('editBtn').classList.remove('admin-locked');
-    showToast('EDITOR UNLOCKED ✓');
-}
-function toggleEditMode() {
-    const view = document.getElementById('modalView');
-    const edit = document.getElementById('modalEdit');
-    const btn = document.getElementById('editBtn');
-    
-    const isEditing = btn.classList.contains('editing');
-    
-    if (isEditing) {
-        // Switch back to view
-        view.style.display = '';
-        edit.style.display = 'none';
-        btn.textContent = 'EDIT';
-        btn.classList.remove('editing');
-    } else {
-        // Switch to edit mode
-        view.style.display = 'none';
-        edit.style.display = '';
-        btn.textContent = 'CLOSE';
-        btn.classList.add('editing');
-        
-        // Populate edit fields
-        document.getElementById('editPreview').value = editModeIP.preview || '';
-        document.getElementById('editBrandUrl').value = editModeIP.brand_url || '';
-        document.getElementById('editOfficialUrl').value = editModeIP.official_url || '';
-        document.getElementById('editSourceUrl').value = editModeIP.source_url || '';
-        document.getElementById('editDescription').value = editModeIP.description || '';
-    }
-}
-
-function saveEdits() {
-    const ip = editModeIP;
-    if (!ip) return;
-    
-    const fields = {
-        preview: document.getElementById('editPreview').value.trim(),
-        brand_url: document.getElementById('editBrandUrl').value.trim(),
-        official_url: document.getElementById('editOfficialUrl').value.trim(),
-        source_url: document.getElementById('editSourceUrl').value.trim(),
-        description: document.getElementById('editDescription').value.trim()
-    };
-    
-    // Save to localStorage
-    Object.keys(fields).forEach(key => {
-        setOverride(ip.id, key, fields[key]);
-    });
-    
-    // Update in-memory IP
-    Object.keys(fields).forEach(key => {
-        ip[key] = fields[key] || ip[key];
-    });
-    
-    // Close edit mode and refresh
-    toggleEditMode();
-    closeModal();
-    renderGallery();
-    showToast('EDITS SAVED ✓');
-}
-
-function cancelEdit() {
-    toggleEditMode();
-}
-
-// ═══ Upload Handler ═══
-function handleUpload() {
-    if (!editModeIP) return;
-    const ipId = editModeIP.id;
-    const ipName = editModeIP.name;
-    
-    showToast('ASK GITHUB MANAGER TO UPLOAD');
-    
-    // Show instructions
-    const previewInput = document.getElementById('editPreview');
-    previewInput.placeholder = 'Ask: @github-manager upload preview for ' + ipName;
-    previewInput.value = '';
-    
-    // Open a small help text
-    const helpText = document.createElement('div');
-    helpText.className = 'edit-upload-help';
-    helpText.textContent = `Tell GitHub Manager: "Upload preview for ${ipName}"`;
-    
-    const existing = document.querySelector('.edit-upload-help');
-    if (existing) existing.remove();
-    
-    previewInput.parentNode.after(helpText);
-    
-    setTimeout(() => {
-        if (helpText.parentNode) helpText.remove();
-    }, 8000);
-}
-
-// ═══ Utilities ═══
-async function copyToClipboard(text) {
-    try {
-        await navigator.clipboard.writeText(text);
-        showToast('COPIED');
-    } catch (err) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast('COPIED');
-    }
-}
 
 function showToast(message) {
     const toast = document.getElementById('toast');
