@@ -200,17 +200,45 @@ body {
     opacity: 0;
 }
 
+/* ═══ SVG 马赛克滤镜（内联） ═══ */
+.mosaic-filter {
+    filter: none;
+}
+
 /* 默认状态：黑白大颗粒马赛克 */
 .card-image img {
-    width: 20%;
-    height: 20%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
-    image-rendering: pixelated;
-    transform: scale(5);
-    transform-origin: 0 0;
-    filter: grayscale(1) brightness(0.7) contrast(1.1);
+    filter: grayscale(1) brightness(0.7) contrast(1.2);
     transition: all 0.4s;
+}
+
+/* 马赛克网格叠加层 */
+.card-image .mosaic-overlay {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+        /* 大像素网格：18x18px */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 17px,
+            rgba(0,0,0,0.12) 17px,
+            rgba(0,0,0,0.12) 18px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 17px,
+            rgba(0,0,0,0.12) 17px,
+            rgba(0,0,0,0.12) 18px
+        );
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.3s;
 }
 
 /* 灰色蒙版（非 hover） */
@@ -229,13 +257,16 @@ body {
 }
 
 .card:hover .card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     transform: scale(1.06);
-    transform-origin: center;
-    image-rendering: auto;
     filter: grayscale(0) brightness(1) contrast(1);
+}
+
+.card:hover .mosaic-overlay {
+    opacity: 0;
+}
+
+.card:hover .card-image::after {
+    opacity: 0;
 }
 
 /* 编号角标 — 左下角 */
@@ -290,16 +321,15 @@ body {
 }
 
 .card.auto-hover .card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     transform: scale(1.06);
-    transform-origin: center;
-    image-rendering: auto;
     filter: grayscale(0) brightness(1) contrast(1);
 }
 
 .card.auto-hover .card-image::after {
+    opacity: 0;
+}
+
+.card.auto-hover .mosaic-overlay {
     opacity: 0;
 }
 

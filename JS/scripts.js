@@ -139,6 +139,7 @@ function renderGallery() {
         <article class="card" data-id="${ip.id}">
             <div class="card-image">
                 <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
+                <div class="mosaic-overlay"></div>
                 <div class="card-overlay"></div>
                 <div class="card-badge">
                     <span class="badge-label">${pinyin}</span>
