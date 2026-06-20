@@ -158,7 +158,10 @@ function renderGallery() {
     gallery.innerHTML = filteredIPs.map((ip, index) => `
         <article class="card" data-id="${ip.id}">
             <div class="card-image">
-                <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
+                <picture>
+                    <source srcset="${ip.preview}" type="image/webp">
+                    <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
+                </picture>
             </div>
             <div class="card-info">
                 <div class="card-code">${ip.code || 'IP' + String(index + 1).padStart(3, '0')}</div>
