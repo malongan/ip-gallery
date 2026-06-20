@@ -139,7 +139,6 @@ function renderGallery() {
         <article class="card" data-id="${ip.id}">
             <div class="card-image">
                 <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
-                <div class="mosaic-overlay"></div>
                 <div class="card-overlay"></div>
                 <div class="card-badge">
                     <span class="badge-label">${pinyin}</span>
@@ -226,16 +225,19 @@ function setupEventListeners() {
         if (!card) return;
         const img = card.querySelector('img');
         const overlay = card.querySelector('.card-overlay');
-        const mosaic = card.querySelector('.mosaic-overlay');
-        // 用 JS 模拟 hover 效果（使用实际颜色值，不是 var()）
+        // 用 JS 模拟 hover 效果
         card.style.background = '#1a1a1a';
         card.style.borderColor = '#4a3a28';
         if (img) {
-            img.style.filter = 'grayscale(0) brightness(1) contrast(1)';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.imageRendering = 'auto';
             img.style.transform = 'scale(1.06)';
+            img.style.transformOrigin = 'center';
+            img.style.filter = 'grayscale(0) brightness(1) contrast(1)';
         }
         if (overlay) overlay.style.opacity = '0';
-        if (mosaic) mosaic.style.opacity = '0';
         // badge
         const num = card.querySelector('.badge-number');
         if (num) num.style.fontSize = '18px';
@@ -249,13 +251,16 @@ function setupEventListeners() {
         card.style.borderColor = '';
         const img = card.querySelector('img');
         const overlay = card.querySelector('.card-overlay');
-        const mosaic = card.querySelector('.mosaic-overlay');
         if (img) {
-            img.style.filter = '';
+            img.style.width = '';
+            img.style.height = '';
+            img.style.objectFit = '';
+            img.style.imageRendering = '';
             img.style.transform = '';
+            img.style.transformOrigin = '';
+            img.style.filter = '';
         }
         if (overlay) overlay.style.opacity = '';
-        if (mosaic) mosaic.style.opacity = '';
         const num = card.querySelector('.badge-number');
         if (num) num.style.fontSize = '';
         const lbl = card.querySelector('.badge-label');
