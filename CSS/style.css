@@ -248,26 +248,49 @@ body {
     font-weight: 400;
     line-height: 1;
     text-transform: uppercase;
-    text-shadow: 0 0 6px rgba(0,0,0,0.8);
 }
 
 .badge-number {
     font-size: 32px;
     font-weight: 700;
-    color: #fff;
+    color: var(--accent);
     line-height: 1;
     letter-spacing: 2px;
     transition: font-size 0.3s;
-    text-shadow: 0 0 8px rgba(0,0,0,0.9);
 }
 
 /* Hover: 编号缩小往左下角收 */
-.card:hover .badge-number {
+.card:hover .badge-number,
+.card.auto-hover .badge-number {
     font-size: 18px;
 }
 
-.card:hover .badge-label {
+.card:hover .badge-label,
+.card.auto-hover .badge-label {
     font-size: 7px;
+}
+
+/* 自动播放动画 — 模拟 hover */
+.card.auto-hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+}
+
+.card.auto-hover .card-overlay {
+    opacity: 0;
+}
+
+.card.auto-hover .card-image img {
+    filter: blur(0) brightness(1);
+    transform: scale(1.06);
+}
+
+.card.auto-hover .card-image::after {
+    opacity: 0;
+}
+
+.card.auto-hover .card-links {
+    display: flex;
 }
 
 /* 链接按钮（hover显示） */

@@ -211,6 +211,65 @@ function setupEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeModal();
     });
+
+    // ═══ Auto-play: 鼠标5秒不动 → 自动翻卡片 ═══
+    let autoPlayTimer = null;
+    let autoPlayInterval = null;
+    let autoPlayActive = false;
+    const IDLE_DELAY = 5000;  // 5秒不动启动
+    const SHOW_DURATION = 2500; // 每张卡片展示2.5秒
+    const CYCLE_GAP = 800;     // 切换间隔
+
+    function stopAutoPlay() {
+        if (autoPlayInterval) {
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = null;
+        }
+        document.querySelectorAll('.card.auto-hover').forEach(c => c.classList.remove('auto-hover'));
+        autoPlayActive = false;
+    }
+
+    function startAutoPlay() {
+        if (autoPlayActive) return;
+        autoPlayActive = true;
+        const cards = document.querySelectorAll('.card');
+        if (cards.length === 0) return;
+
+        let currentIndex = -1;
+
+        function showNext() {
+            // 去掉当前卡片的动画
+            if (currentIndex >= 0 && cards[currentIndex]) {
+                cards[currentIndex].classList.remove('auto-hover');
+            }
+            // 选下一张（随机）
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * cards.length);
+            } while (nextIndex === currentIndex && cards.length > 1);
+            currentIndex = nextIndex;
+            cards[currentIndex].classList.add('auto-hover');
+        }
+
+        // 立即展示第一张
+        showNext();
+        // 定时切换
+        autoPlayInterval = setInterval(showNext, SHOW_DURATION + CYCLE_GAP);
+    }
+
+    function resetIdleTimer() {
+        stopAutoPlay();
+        if (autoPlayTimer) clearTimeout(autoPlayTimer);
+        autoPlayTimer = setTimeout(startAutoPlay, IDLE_DELAY);
+    }
+
+    // 监听鼠标/键盘/触摸活动
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'].forEach(event => {
+        document.addEventListener(event, resetIdleTimer, { passive: true });
+    });
+
+    // 初始启动空闲计时器
+    resetIdleTimer();
 }
 
 // ═══ Modal ═══
