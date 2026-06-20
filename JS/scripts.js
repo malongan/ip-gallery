@@ -48,6 +48,12 @@ async function loadData() {
     }
     const data = await response.json();
     allIPs = data.ips || [];
+
+    // 显示版本号
+    const versionTag = document.getElementById('versionTag');
+    if (versionTag && data.version) {
+        versionTag.textContent = data.version;
+    }
 }
 
 /**
