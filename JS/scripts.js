@@ -252,4 +252,4 @@ function debounce(func, wait) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', init);
+init();
