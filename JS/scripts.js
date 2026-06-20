@@ -260,6 +260,18 @@ function setupEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeModal();
     });
+
+    // Admin unlock: click version tag 3 times
+    const vtag = document.getElementById('versionTag');
+    if (vtag) {
+        vtag.style.cursor = 'pointer';
+        vtag.addEventListener('click', () => {
+            adminClickCount++;
+            if (adminClickCount >= 3 && !adminUnlocked) {
+                unlockAdmin();
+            }
+        });
+    }
 }
 
 // ═══ Modal ═══
@@ -302,7 +314,15 @@ function closeModal() {
     editModeIP = null;
 }
 
-// ═══ Edit Mode ═══
+// ═══ Admin Unlock ═══
+let adminClickCount = 0;
+let adminUnlocked = false;
+
+function unlockAdmin() {
+    adminUnlocked = true;
+    document.getElementById('editBtn').classList.remove('admin-locked');
+    showToast('EDITOR UNLOCKED ✓');
+}
 function toggleEditMode() {
     const view = document.getElementById('modalView');
     const edit = document.getElementById('modalEdit');

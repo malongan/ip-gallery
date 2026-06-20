@@ -412,6 +412,9 @@ body::after {
 .modal-edit-btn:hover { border-color: var(--accent); color: var(--accent); }
 .modal-edit-btn.editing { background: var(--accent); border-color: var(--accent); color: var(--bg-deep); }
 
+/* 默认隐藏编辑按钮，点击版本号3次解锁 */
+.modal-edit-btn.admin-locked { display: none; }
+
 .modal-edit-body {
     padding: 20px 24px;
 }
