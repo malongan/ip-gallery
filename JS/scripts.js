@@ -217,16 +217,66 @@ function setupEventListeners() {
     let autoPlayTimer = null;
     let autoPlayInterval = null;
     let autoPlayActive = false;
-    const IDLE_DELAY = 5000;  // 5秒不动启动
-    const SHOW_DURATION = 2500; // 每张卡片展示2.5秒
-    const CYCLE_GAP = 800;     // 切换间隔
+    let autoPlayCard = null;
+    const IDLE_DELAY = 5000;
+    const SHOW_DURATION = 2500;
+    const CYCLE_GAP = 800;
+
+    function applyHover(card) {
+        if (!card) return;
+        const img = card.querySelector('img');
+        const overlay = card.querySelector('.card-overlay');
+        const mosaic = card.querySelector('.mosaic-overlay');
+        const scanlines = card.querySelector('.card-image')?.querySelector('::after');
+        // 直接用 JS 模拟 hover 效果
+        card.style.background = 'var(--bg-card-hover)';
+        card.style.borderColor = 'var(--border-hover)';
+        if (img) {
+            img.style.filter = 'grayscale(0) brightness(1) contrast(1)';
+            img.style.transform = 'scale(1.06)';
+        }
+        if (overlay) overlay.style.opacity = '0';
+        if (mosaic) mosaic.style.opacity = '0';
+        // 扫描线
+        const ci = card.querySelector('.card-image');
+        if (ci) ci.style.setProperty('--scan-opacity', '0');
+        // badge
+        const num = card.querySelector('.badge-number');
+        if (num) num.style.fontSize = '18px';
+        const lbl = card.querySelector('.badge-label');
+        if (lbl) lbl.style.fontSize = '7px';
+    }
+
+    function removeHover(card) {
+        if (!card) return;
+        card.style.background = '';
+        card.style.borderColor = '';
+        const img = card.querySelector('img');
+        const overlay = card.querySelector('.card-overlay');
+        const mosaic = card.querySelector('.mosaic-overlay');
+        if (img) {
+            img.style.filter = '';
+            img.style.transform = '';
+        }
+        if (overlay) overlay.style.opacity = '';
+        if (mosaic) mosaic.style.opacity = '';
+        const ci = card.querySelector('.card-image');
+        if (ci) ci.style.removeProperty('--scan-opacity');
+        const num = card.querySelector('.badge-number');
+        if (num) num.style.fontSize = '';
+        const lbl = card.querySelector('.badge-label');
+        if (lbl) lbl.style.fontSize = '';
+    }
 
     function stopAutoPlay() {
         if (autoPlayInterval) {
             clearInterval(autoPlayInterval);
             autoPlayInterval = null;
         }
-        document.querySelectorAll('.card.auto-hover').forEach(c => c.classList.remove('auto-hover'));
+        if (autoPlayCard) {
+            removeHover(autoPlayCard);
+            autoPlayCard = null;
+        }
         autoPlayActive = false;
     }
 
@@ -236,25 +286,17 @@ function setupEventListeners() {
         const cards = document.querySelectorAll('.card');
         if (cards.length === 0) return;
 
-        let currentIndex = -1;
-
         function showNext() {
-            // 去掉当前卡片的动画
-            if (currentIndex >= 0 && cards[currentIndex]) {
-                cards[currentIndex].classList.remove('auto-hover');
-            }
-            // 选下一张（随机）
+            if (autoPlayCard) removeHover(autoPlayCard);
             let nextIndex;
             do {
                 nextIndex = Math.floor(Math.random() * cards.length);
-            } while (nextIndex === currentIndex && cards.length > 1);
-            currentIndex = nextIndex;
-            cards[currentIndex].classList.add('auto-hover');
+            } while (nextIndex === Array.from(cards).indexOf(autoPlayCard) && cards.length > 1);
+            autoPlayCard = cards[nextIndex];
+            applyHover(autoPlayCard);
         }
 
-        // 立即展示第一张
         showNext();
-        // 定时切换
         autoPlayInterval = setInterval(showNext, SHOW_DURATION + CYCLE_GAP);
     }
 
@@ -264,12 +306,10 @@ function setupEventListeners() {
         autoPlayTimer = setTimeout(startAutoPlay, IDLE_DELAY);
     }
 
-    // 监听鼠标/键盘/触摸活动
     ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'].forEach(event => {
         document.addEventListener(event, resetIdleTimer, { passive: true });
     });
 
-    // 初始启动空闲计时器
     resetIdleTimer();
 }
 

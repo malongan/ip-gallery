@@ -217,7 +217,6 @@ body {
 
 /* 马赛克网格叠加层 */
 .card-image .mosaic-overlay {
-    content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: 
