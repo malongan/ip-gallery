@@ -196,24 +196,34 @@ body {
     z-index: 3;
 }
 
+/* 默认状态：canvas 像素覆盖层（白色/禁用闪烁保护） */
+.card-image .pixel-overlay {
+    display: block;
+}
+
+/* Hover: 隐藏像素覆盖层，显示原始彩色图片 */
+.card:hover .pixel-overlay {
+    opacity: 0;
+}
+
 .card:hover .card-image::after {
     opacity: 0;
 }
 
-/* 默认状态：黑白大颗粒马赛克（缩放法） */
+/* 默认状态：图片完整显示（canvas 像素覆盖层盖在上面） */
 .card-image img {
-    width: 12.5%;
-    height: 12.5%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
-    image-rendering: pixelated;
-    transform: scale(8);
-    transform-origin: 0 0;
-    filter: grayscale(1) brightness(0.7) contrast(1.2);
     transition: all 0.4s;
 }
 
-/* 灰色蒙版（非 hover） */
+.card:hover .card-image img {
+    transform: scale(1.06);
+}
+
+/* 灰色蒙版 */
 .card-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -223,19 +233,17 @@ body {
     z-index: 2;
 }
 
-/* Hover: 还原彩色清晰图片 */
 .card:hover .card-overlay {
     opacity: 0;
 }
 
-.card:hover .card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.06);
-    transform-origin: center;
-    image-rendering: auto;
-    filter: grayscale(0) brightness(1) contrast(1);
+/* 像素覆盖层（canvas） */
+.card-image .pixel-overlay {
+    display: block;
+}
+
+.card:hover .pixel-overlay {
+    opacity: 0;
 }
 
 .card:hover .card-image::after {

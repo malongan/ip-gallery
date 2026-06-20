@@ -45,6 +45,58 @@ async function loadData() {
     }
 }
 
+// ═══ Canvas 像素化 ═══
+// 图片加载后，生成黑白马赛克 canvas 覆盖层
+function createPixelOverlay(img, blocks) {
+    const cvs = document.createElement('canvas');
+    cvs.className = 'pixel-overlay';
+    cvs.width = img.naturalWidth || 400;
+    cvs.height = img.naturalHeight || 400;
+    const ctx = cvs.getContext('2d');
+    const w = cvs.width, h = cvs.height;
+    const bw = Math.max(1, Math.floor(w / blocks));
+    const bh = Math.max(1, Math.floor(h / blocks));
+    
+    // 缩小到像素块尺寸（邻近插值）
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, bw, bh);
+    // 放大回原尺寸（邻近插值 → 大颗粒马赛克）
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(cvs, 0, 0, bw, bh, 0, 0, w, h);
+    
+    // 转黑白
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const d = imageData.data;
+    for (let i = 0; i < d.length; i += 4) {
+        const gray = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        d[i] = d[i+1] = d[i+2] = gray * 0.7; // brightness 0.7
+    }
+    ctx.putImageData(imageData, 0, 0);
+    
+    // 使用 CSS 填满容器
+    cvs.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;transition:opacity 0.4s;';
+    
+    return cvs;
+}
+
+// 遍历所有卡片，为每个图片生成像素化覆盖层
+function setupPixelation() {
+    document.querySelectorAll('.card-image img').forEach(img => {
+        if (img.dataset.pixelReady) return;
+        if (img.complete && img.naturalWidth > 0) {
+            img.dataset.pixelReady = '1';
+            const overlay = createPixelOverlay(img, 18);
+            img.parentElement.insertBefore(overlay, img.nextSibling);
+        } else {
+            img.addEventListener('load', () => {
+                img.dataset.pixelReady = '1';
+                const overlay = createPixelOverlay(img, 18);
+                img.parentElement.insertBefore(overlay, img.nextSibling);
+            }, { once: true });
+        }
+    });
+}
+
 // ═══ Categories ═══
 function setupCategories() {
     CATEGORIES['character'].ips = allIPs.filter(ip => {
@@ -155,6 +207,9 @@ function renderGallery() {
             </div>
         </article>
     `}).join('');
+
+    // 图片加载后生成马赛克覆盖层
+    setupPixelation();
 }
 
 // ═══ Event Listeners ═══
@@ -225,20 +280,14 @@ function setupEventListeners() {
         if (!card) return;
         const img = card.querySelector('img');
         const overlay = card.querySelector('.card-overlay');
-        // 用 JS 模拟 hover 效果
+        const pixelOverlay = card.querySelector('.pixel-overlay');
         card.style.background = '#1a1a1a';
         card.style.borderColor = '#4a3a28';
         if (img) {
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.imageRendering = 'auto';
             img.style.transform = 'scale(1.06)';
-            img.style.transformOrigin = 'center';
-            img.style.filter = 'grayscale(0) brightness(1) contrast(1)';
         }
         if (overlay) overlay.style.opacity = '0';
-        // badge
+        if (pixelOverlay) pixelOverlay.style.opacity = '0';
         const num = card.querySelector('.badge-number');
         if (num) num.style.fontSize = '18px';
         const lbl = card.querySelector('.badge-label');
@@ -251,16 +300,12 @@ function setupEventListeners() {
         card.style.borderColor = '';
         const img = card.querySelector('img');
         const overlay = card.querySelector('.card-overlay');
+        const pixelOverlay = card.querySelector('.pixel-overlay');
         if (img) {
-            img.style.width = '';
-            img.style.height = '';
-            img.style.objectFit = '';
-            img.style.imageRendering = '';
             img.style.transform = '';
-            img.style.transformOrigin = '';
-            img.style.filter = '';
         }
         if (overlay) overlay.style.opacity = '';
+        if (pixelOverlay) pixelOverlay.style.opacity = '';
         const num = card.querySelector('.badge-number');
         if (num) num.style.fontSize = '';
         const lbl = card.querySelector('.badge-label');
