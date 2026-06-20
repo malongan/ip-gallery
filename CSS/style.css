@@ -170,7 +170,7 @@ body {
     border-color: var(--border-hover);
 }
 
-/* 图片容器 */
+/* 图片 */
 .card-image {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -178,6 +178,26 @@ body {
     background: var(--bg-secondary);
     flex-shrink: 0;
     position: relative;
+}
+
+.card-image::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+    );
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 3;
+}
+
+.card:hover .card-image::after {
+    opacity: 0;
 }
 
 .card-image img {
@@ -212,14 +232,11 @@ body {
 /* 编号角标 — 左下角 */
 .card-badge {
     position: absolute;
-    bottom: 0; left: 0;
-    z-index: 3;
+    bottom: 6px; left: 6px;
+    z-index: 4;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 8px 10px;
-    background: linear-gradient(to right, rgba(0,0,0,0.75) 60%, transparent);
-    width: 66%;
     transition: all 0.3s;
     pointer-events: none;
 }
@@ -231,6 +248,7 @@ body {
     font-weight: 400;
     line-height: 1;
     text-transform: uppercase;
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
 }
 
 .badge-number {
@@ -240,15 +258,10 @@ body {
     line-height: 1;
     letter-spacing: 2px;
     transition: font-size 0.3s;
+    text-shadow: 0 0 8px rgba(0,0,0,0.9);
 }
 
 /* Hover: 编号缩小往左下角收 */
-.card:hover .card-badge {
-    padding: 4px 6px;
-    width: auto;
-    background: linear-gradient(to right, rgba(0,0,0,0.7) 80%, transparent);
-}
-
 .card:hover .badge-number {
     font-size: 18px;
 }
@@ -343,9 +356,13 @@ body {
     width: 100%;
     max-height: 70vh;
     position: relative;
+    overflow: hidden;
+}
+
+#modalView {
     display: flex;
     flex-direction: row;
-    overflow: hidden;
+    height: 100%;
 }
 
 .modal-close {

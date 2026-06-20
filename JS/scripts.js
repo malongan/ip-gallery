@@ -133,13 +133,15 @@ function renderGallery() {
     gallery.innerHTML = filteredIPs.map(ip => {
         // 提取编号的数字部分 (IP001 → 001)
         const codeNum = (ip.code || '').replace(/^IP/i, '');
+        // IP 名称拼音（取 id 下划线前部分，大写）
+        const pinyin = (ip.id || '').split('_')[0].toUpperCase();
         return `
         <article class="card" data-id="${ip.id}">
             <div class="card-image">
                 <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
                 <div class="card-overlay"></div>
                 <div class="card-badge">
-                    <span class="badge-label">IP</span>
+                    <span class="badge-label">${pinyin}</span>
                     <span class="badge-number">${codeNum}</span>
                 </div>
                 <div class="card-links">
