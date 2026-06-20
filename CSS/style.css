@@ -124,7 +124,7 @@ body {
     padding: 4px 10px;
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 9px;
     font-family: inherit;
     letter-spacing: 2px;
@@ -134,7 +134,7 @@ body {
 
 .filter-btn:hover {
     border-color: var(--accent-dim);
-    color: var(--text-secondary);
+    color: var(--accent);
 }
 
 .filter-btn.active {
@@ -154,27 +154,15 @@ body {
     gap: 12px;
 }
 
-/* ═══ 卡片 ═══ */
+/* ═══ 卡片 — 新款设计 ═══ */
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     cursor: pointer;
     transition: all 0.2s;
-    position: relative;
     display: flex;
     flex-direction: column;
-}
-
-/* 复古像素外框 */
-.card::before {
-    content: '';
-    position: absolute;
-    top: 2px; left: 2px;
-    right: 2px; bottom: 2px;
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
-    pointer-events: none;
-    z-index: 1;
+    overflow: hidden;
 }
 
 .card:hover {
@@ -182,11 +170,7 @@ body {
     border-color: var(--border-hover);
 }
 
-.card:hover::before {
-    border-color: rgba(212,165,116,0.15);
-}
-
-/* 图片 */
+/* 图片容器 */
 .card-image {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -196,72 +180,81 @@ body {
     position: relative;
 }
 
-.card-image::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.04) 2px,
-        rgba(0,0,0,0.04) 4px
-    );
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-
-.card:hover .card-image::after {
-    opacity: 0;
-}
-
 .card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
     display: block;
+    transition: transform 0.4s, filter 0.3s;
+    filter: blur(2px) brightness(0.7);
+}
+
+/* 灰色蒙版（非 hover） */
+.card-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(20,20,20,0.5);
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Hover: 去掉蒙版，图片清晰放大 */
+.card:hover .card-overlay {
+    opacity: 0;
 }
 
 .card:hover .card-image img {
+    filter: blur(0) brightness(1);
     transform: scale(1.06);
 }
 
-/* ═══ 卡片说明 — 大字辨识 ═══ */
-.card-info {
-    padding: 10px 12px 12px;
+/* 编号角标 — 左下角 */
+.card-badge {
+    position: absolute;
+    bottom: 0; left: 0;
+    z-index: 3;
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    flex: 1;
+    align-items: flex-start;
+    padding: 8px 10px;
+    background: linear-gradient(to right, rgba(0,0,0,0.75) 60%, transparent);
+    width: 66%;
+    transition: all 0.3s;
+    pointer-events: none;
 }
 
-.card-code {
-    font-size: 10px;
-    color: var(--accent-dim);
-    letter-spacing: 1px;
-    margin-bottom: 1px;
+.badge-label {
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
 }
 
-.card-code-bracket {
-    color: var(--text-muted);
-}
-
-.card-name {
-    font-size: 14px;
+.badge-number {
+    font-size: 32px;
     font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.3;
-    cursor: pointer;
-    word-break: break-word;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: 2px;
+    transition: font-size 0.3s;
 }
 
-.card-name:hover { color: var(--accent); }
+/* Hover: 编号缩小往左下角收 */
+.card:hover .card-badge {
+    padding: 4px 6px;
+    width: auto;
+    background: linear-gradient(to right, rgba(0,0,0,0.7) 80%, transparent);
+}
 
-.card-brand {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 1px;
+.card:hover .badge-number {
+    font-size: 18px;
+}
+
+.card:hover .badge-label {
+    font-size: 7px;
 }
 
 /* 链接按钮（hover显示） */
@@ -269,7 +262,7 @@ body {
     display: none;
     position: absolute;
     top: 4px; right: 4px;
-    z-index: 2;
+    z-index: 4;
     gap: 2px;
 }
 
@@ -291,6 +284,32 @@ body {
 
 .card-link:hover { border-color: var(--accent); color: var(--accent); }
 .card-link.hidden { display: none; }
+
+/* 卡片说明 */
+.card-info {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+.card-name:hover { color: var(--accent); }
+
+.card-brand {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
 
 /* ═══ 空状态 ═══ */
 .empty {
@@ -320,18 +339,20 @@ body {
 .modal-content {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    max-width: 520px;
+    max-width: 620px;
     width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
+    max-height: 70vh;
     position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
 }
 
 .modal-close {
     position: absolute;
-    top: 10px; right: 10px;
-    width: 28px; height: 28px;
-    background: rgba(0,0,0,0.7);
+    top: 8px; right: 8px;
+    width: 26px; height: 26px;
+    background: rgba(0,0,0,0.8);
     border: 1px solid var(--border);
     color: var(--text-muted);
     font-size: 14px;
@@ -341,23 +362,33 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 10;
+    border-radius: 0;
 }
 
 .modal-close:hover { background: #5a3a3a; border-color: #8a4a4a; color: #e8a0a0; }
 
 .modal-image {
-    width: 100%;
+    width: 280px;
+    min-width: 200px;
     aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
 .modal-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.modal-info { padding: 16px 20px; }
+.modal-info {
+    padding: 20px 22px;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
 
-.modal-info h2 { font-size: 18px; color: var(--accent); letter-spacing: 2px; margin-bottom: 2px; }
+.modal-info h2 { font-size: 16px; color: var(--accent); letter-spacing: 2px; margin-bottom: 4px; }
 
 .modal-meta {
     font-size: 10px;
@@ -375,6 +406,7 @@ body {
     color: var(--text-secondary);
     font-size: 12px;
     line-height: 1.8;
+    flex: 1;
 }
 
 .modal-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
@@ -397,148 +429,6 @@ body {
 .btn-link { background: transparent; color: var(--text-muted); }
 .btn-link:hover { border-color: var(--accent); color: var(--accent); }
 .btn-link.hidden { display: none; }
-
-/* ═══ Edit Mode ═══ */
-.modal-edit-btn {
-    position: absolute;
-    top: 10px; right: 44px;
-    padding: 4px 10px;
-    background: rgba(10,10,10,0.7);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 9px;
-    font-family: inherit;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.2s;
-    z-index: 10;
-}
-
-.modal-edit-btn:hover { border-color: var(--accent); color: var(--accent); }
-.modal-edit-btn.editing { background: var(--accent); border-color: var(--accent); color: var(--bg-deep); }
-
-/* 默认隐藏编辑按钮，点击版本号3次解锁 */
-.modal-edit-btn.admin-locked { display: none; }
-
-.modal-edit-body {
-    padding: 20px 24px;
-}
-
-.edit-section {
-    margin-bottom: 14px;
-}
-
-.edit-label {
-    display: block;
-    font-size: 9px;
-    color: var(--accent-dim);
-    letter-spacing: 2px;
-    margin-bottom: 4px;
-}
-
-.edit-input {
-    width: 100%;
-    padding: 8px 10px;
-    background: var(--bg-deep);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 11px;
-    font-family: inherit;
-    letter-spacing: 0.5px;
-    transition: border-color 0.2s;
-}
-
-.edit-input:focus {
-    outline: none;
-    border-color: var(--accent-dim);
-}
-
-.edit-url-row {
-    display: flex;
-    gap: 6px;
-}
-
-.edit-url-row .edit-input {
-    flex: 1;
-}
-
-.edit-btn-sm {
-    flex-shrink: 0;
-    width: 34px;
-    padding: 8px 0;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-
-.edit-btn-sm:hover { border-color: var(--accent-dim); color: var(--accent); }
-
-.edit-textarea {
-    width: 100%;
-    padding: 8px 10px;
-    background: var(--bg-deep);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 11px;
-    font-family: inherit;
-    letter-spacing: 0.5px;
-    resize: vertical;
-    transition: border-color 0.2s;
-    line-height: 1.6;
-}
-
-.edit-textarea:focus {
-    outline: none;
-    border-color: var(--accent-dim);
-}
-
-.edit-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-}
-
-.btn-save, .btn-cancel {
-    padding: 8px 16px;
-    font-size: 9px;
-    font-family: inherit;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid var(--border);
-}
-
-.btn-save {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--bg-deep);
-    font-weight: 700;
-}
-
-.btn-save:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
-
-.btn-cancel {
-    background: transparent;
-    color: var(--text-muted);
-}
-
-.btn-cancel:hover { border-color: var(--accent-dim); color: var(--text-secondary); }
-
-.edit-upload-help {
-    font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 1px;
-    margin-top: 4px;
-    padding: 4px 8px;
-    background: rgba(212,165,116,0.08);
-    border: 1px solid var(--accent-dim);
-}
 
 /* ═══ Footer ═══ */
 .footer {

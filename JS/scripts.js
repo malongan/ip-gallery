@@ -130,22 +130,29 @@ function renderGallery() {
         return;
     }
     
-    gallery.innerHTML = filteredIPs.map(ip => `
+    gallery.innerHTML = filteredIPs.map(ip => {
+        // 提取编号的数字部分 (IP001 → 001)
+        const codeNum = (ip.code || '').replace(/^IP/i, '');
+        return `
         <article class="card" data-id="${ip.id}">
             <div class="card-image">
                 <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
-            </div>
-            <div class="card-info">
-                <div class="card-code">${ip.code || ''}</div>
-                <div class="card-name" data-name="${ip.name}">${ip.name}</div>
-                <div class="card-brand">${ip.brand || ''}</div>
+                <div class="card-overlay"></div>
+                <div class="card-badge">
+                    <span class="badge-label">IP</span>
+                    <span class="badge-number">${codeNum}</span>
+                </div>
                 <div class="card-links">
                     ${ip.brand_url ? `<a class="card-link" href="${ip.brand_url}" target="_blank">BRAND</a>` : ''}
                     ${ip.official_url ? `<a class="card-link" href="${ip.official_url}" target="_blank">OFFICIAL</a>` : ''}
                 </div>
             </div>
+            <div class="card-info">
+                <div class="card-name" data-name="${ip.name}">${ip.name}</div>
+                <div class="card-brand">${ip.brand || ''}</div>
+            </div>
         </article>
-    `).join('');
+    `}).join('');
 }
 
 // ═══ Event Listeners ═══
