@@ -206,15 +206,9 @@ function setupEventListeners() {
 
 // ═══ Modal ═══
 function openModal(ip) {
-    editModeIP = ip;
     const modal = document.getElementById('modal');
     
-    // Switch to view mode
     document.getElementById('modalView').style.display = '';
-    document.getElementById('modalEdit').style.display = 'none';
-    document.getElementById('editBtn').textContent = 'EDIT';
-    document.getElementById('editBtn').classList.remove('editing');
-
     document.getElementById('modalImage').src = ip.preview || '';
     document.getElementById('modalImage').alt = ip.name;
     document.getElementById('modalName').textContent = ip.name;
@@ -241,6 +235,7 @@ function openModal(ip) {
 function closeModal() {
     document.getElementById('modal').classList.remove('active');
     document.body.style.overflow = '';
+}
 
 function showToast(message) {
     const toast = document.getElementById('toast');
