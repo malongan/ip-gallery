@@ -227,19 +227,15 @@ function setupEventListeners() {
         const img = card.querySelector('img');
         const overlay = card.querySelector('.card-overlay');
         const mosaic = card.querySelector('.mosaic-overlay');
-        const scanlines = card.querySelector('.card-image')?.querySelector('::after');
-        // 直接用 JS 模拟 hover 效果
-        card.style.background = 'var(--bg-card-hover)';
-        card.style.borderColor = 'var(--border-hover)';
+        // 用 JS 模拟 hover 效果（使用实际颜色值，不是 var()）
+        card.style.background = '#1a1a1a';
+        card.style.borderColor = '#4a3a28';
         if (img) {
             img.style.filter = 'grayscale(0) brightness(1) contrast(1)';
             img.style.transform = 'scale(1.06)';
         }
         if (overlay) overlay.style.opacity = '0';
         if (mosaic) mosaic.style.opacity = '0';
-        // 扫描线
-        const ci = card.querySelector('.card-image');
-        if (ci) ci.style.setProperty('--scan-opacity', '0');
         // badge
         const num = card.querySelector('.badge-number');
         if (num) num.style.fontSize = '18px';
@@ -260,8 +256,6 @@ function setupEventListeners() {
         }
         if (overlay) overlay.style.opacity = '';
         if (mosaic) mosaic.style.opacity = '';
-        const ci = card.querySelector('.card-image');
-        if (ci) ci.style.removeProperty('--scan-opacity');
         const num = card.querySelector('.badge-number');
         if (num) num.style.fontSize = '';
         const lbl = card.querySelector('.badge-label');
