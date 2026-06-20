@@ -120,7 +120,7 @@ body {
     margin: 0 auto;
     padding: 16px 24px 40px;
     column-gap: 12px;
-    column-count: 3;
+    column-count: 2;
 }
 
 .card {
@@ -293,31 +293,38 @@ body {
 .empty-text { font-size: 12px; letter-spacing: 2px; }
 
 /* ========================================
-   响应式 - 平滑过渡
+   响应式 - 瀑布流列数（移动优先，递增过渡）
    ======================================== */
 
-@media (min-width: 500px) {
-    .gallery { column-count: 4; padding: 14px; }
+@media (min-width: 400px) {
+    .gallery { column-count: 3; }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 560px) {
+    .gallery { column-count: 4; }
+}
+
+@media (min-width: 720px) {
     .gallery { column-count: 5; }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 920px) {
     .gallery { column-count: 6; }
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1120px) {
     .gallery { column-count: 7; }
 }
 
-@media (min-width: 1300px) {
+@media (min-width: 1320px) {
     .gallery { column-count: 8; }
 }
 
-/* 移动端布局 */
-@media (max-width: 500px) {
+/* ========================================
+   响应式 - 移动端布局调整
+   ======================================== */
+
+@media (max-width: 559px) {
     .header { padding: 16px; }
     .header-top { flex-direction: column; align-items: flex-start; gap: 12px; }
     .search-input { width: 100%; }
@@ -325,4 +332,5 @@ body {
     .filter-bar { flex-direction: column; gap: 8px; }
     .filter-group { flex-wrap: wrap; }
     .filter-group + .filter-group { margin-left: 0; padding-left: 0; border-left: none; }
+    .card { margin-bottom: 8px; }
 }
