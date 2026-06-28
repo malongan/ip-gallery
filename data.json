@@ -1,8 +1,19 @@
 {
   "version": "v1.0.0",
-  "updated": "2026-06-21",
+  "updated": "2026-06-28",
   "note": "IP编号已固定，以后新增IP按顺序往后排",
   "ips": [
+    {
+      "id": "da_er_gou",
+      "code": "IP007",
+      "name": "大耳狗",
+      "brand": "三丽鸥 (Sanrio)",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/preview/da_er_gou_preview.webp",
+      "description": "大耳狗 - 可爱、治愈、蓬松"
+    },
     {
       "id": "guming_moli",
       "code": "IP001",
@@ -67,18 +78,7 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/yunyi_preview.webp",
-      "description": "云一朵 - 3D可爱头像、动漫Q版"
-    },
-    {
-      "id": "da_er_gou",
-      "code": "IP007",
-      "name": "大耳狗",
-      "brand": "三丽鸥 (Sanrio)",
-      "brand_url": "",
-      "official_url": "",
-      "source_url": "",
-      "preview": "https://malongan.github.io/ip-gallery/images/preview/da_er_gou_preview.webp",
-      "description": "大耳狗（Cinnamoroll）- 白色蓬松小狗、长耳朵、蓝眼睛、治愈系"
+      "description": "云一朵 - 动漫可爱、小孩Q版"
     }
   ]
 }
