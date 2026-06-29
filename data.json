@@ -90,6 +90,17 @@
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/xunniao_preview.webp",
       "description": "迅鸟 - 科技、可爱"
+    },
+    {
+      "id": "bilibili",
+      "code": "IP009",
+      "name": "哔哩哔哩",
+      "brand": "哔哩哔哩",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/preview/bilibili_preview.webp",
+      "description": "哔哩哔哩 - 可爱卡通"
     }
   ]
 }
