@@ -1,6 +1,6 @@
 {
   "version": "v1.0.0",
-  "updated": "2026-06-28",
+  "updated": "2026-06-29",
   "note": "IP编号已固定，以后新增IP按顺序往后排",
   "ips": [
     {
@@ -79,6 +79,17 @@
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/da_er_gou_preview.webp",
       "description": "大耳狗 - 可爱、治愈、蓬松"
+    },
+    {
+      "id": "xunniao",
+      "code": "IP008",
+      "name": "迅鸟",
+      "brand": "迅雷",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/preview/xunniao_preview.webp",
+      "description": "迅鸟 - 科技、可爱"
     }
   ]
 }
