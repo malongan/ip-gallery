@@ -9,9 +9,9 @@ let currentFilter = 'all';
 
 const CATEGORIES = {
     'all': { label: 'ALL', ips: [] },
-    'character': { label: '卡通人物', ips: [] },
-    'product': { label: '商品', ips: [] },
-    'personal': { label: '个人IP', ips: [] }
+    'character': { label: '卡通IP', ips: [] },
+    'brand': { label: '品牌', ips: [] },
+    'real': { label: '真人', ips: [] }
 };
 
 // ═══ Init ═══
@@ -98,21 +98,27 @@ function setupPixelation() {
 }
 
 // ═══ Categories ═══
+// 自动分类：根据品牌和特征判断
 function setupCategories() {
+    const realPeopleBrands = ['个人ip'];
+    const brandIPs = ['古茗', '三丽鸥', 'sanrio'];
+    
     CATEGORIES['character'].ips = allIPs.filter(ip => {
         const brand = (ip.brand || '').toLowerCase();
-        return ['芒果tv', '爱奇艺', '百度网盘'].some(b => brand.includes(b));
+        // 卡通角色：有明确品牌方的非真人 IP
+        if (realPeopleBrands.some(b => brand.includes(b))) return false;
+        if (brandIPs.some(b => brand.includes(b))) return false;
+        return true;
     }).map(ip => ip.id);
     
-    CATEGORIES['product'].ips = allIPs.filter(ip => {
-        const type = (ip.type || '').toLowerCase();
+    CATEGORIES['real'].ips = allIPs.filter(ip => {
         const brand = (ip.brand || '').toLowerCase();
-        return type.includes('商品') || brand.includes('古茗');
+        return realPeopleBrands.some(b => brand.includes(b));
     }).map(ip => ip.id);
     
-    CATEGORIES['personal'].ips = allIPs.filter(ip => {
+    CATEGORIES['brand'].ips = allIPs.filter(ip => {
         const brand = (ip.brand || '').toLowerCase();
-        return brand.includes('个人') || !['芒果tv', '爱奇艺', '百度网盘', '古茗'].some(b => brand.includes(b));
+        return brandIPs.some(b => brand.includes(b));
     }).map(ip => ip.id);
     
     CATEGORIES['all'].ips = allIPs.map(ip => ip.id);
@@ -122,7 +128,7 @@ function setupCategories() {
 function renderFilterBar() {
     const filterBar = document.getElementById('filterBar');
     let html = '';
-    const mainCategories = ['all', 'character', 'product', 'personal'];
+    const mainCategories = ['all', 'character', 'brand', 'real'];
     
     mainCategories.forEach(key => {
         const cat = CATEGORIES[key];
@@ -131,19 +137,26 @@ function renderFilterBar() {
                 <div class="filter-group">
                     <button class="filter-btn ${key === 'all' ? 'active' : ''}" data-filter="${key}">
                         ${cat.label}
+                        <span class="filter-count">${cat.ips.length}</span>
                     </button>
                 </div>
             `;
         }
     });
     
-    const brands = [...new Set(allIPs.map(ip => ip.brand).filter(Boolean))];
-    if (brands.length > 0) {
-        html += `<div class="filter-group">`;
-        brands.slice(0, 4).forEach(brand => {
-            html += `<button class="filter-btn" data-filter="brand:${brand}">${brand}</button>`;
+    // 品牌子分类
+    const brandCounts = {};
+    allIPs.forEach(ip => {
+        const b = ip.brand || '';
+        if (b) brandCounts[b] = (brandCounts[b] || 0) + 1;
+    });
+    const sortedBrands = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]);
+    
+    if (sortedBrands.length > 0) {
+        html += `<div class="filter-sep"></div>`;
+        sortedBrands.forEach(([brand, count]) => {
+            html += `<button class="filter-btn filter-btn-sm" data-filter="brand:${brand}">${brand}<span class="filter-count">${count}</span></button>`;
         });
-        html += `</div>`;
     }
     
     filterBar.innerHTML = html;
