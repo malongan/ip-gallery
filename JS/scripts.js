@@ -101,7 +101,7 @@ function setupPixelation() {
 // 自动分类：根据品牌和特征判断
 function setupCategories() {
     const realPeopleBrands = ['个人ip'];
-    const brandIPs = ['古茗', '三丽鸥', 'sanrio'];
+    const brandIPs = ['古茗'];
     
     CATEGORIES['character'].ips = allIPs.filter(ip => {
         const brand = (ip.brand || '').toLowerCase();
