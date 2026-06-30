@@ -159,6 +159,7 @@ function renderGallery() {
     if (searchTerm) {
         filteredIPs = filteredIPs.filter(ip => 
             ip.name.toLowerCase().includes(searchTerm) ||
+            (ip.code && ip.code.toLowerCase().includes(searchTerm)) ||
             (ip.brand && ip.brand.toLowerCase().includes(searchTerm))
         );
     }
@@ -202,7 +203,8 @@ function renderGallery() {
                 </div>
             </div>
             <div class="card-info">
-                <div class="card-name" data-name="${ip.name}">${ip.name}</div>
+                <div class="card-code">${ip.code || ''}</div>
+                <div class="card-name" data-name="${ip.name}" data-code="${ip.code || ''}">${ip.name}</div>
                 <div class="card-brand">${ip.brand || ''}</div>
             </div>
         </article>
@@ -234,7 +236,7 @@ function setupEventListeners() {
         
         if (nameBtn) {
             e.stopPropagation();
-            copyToClipboard(nameBtn.dataset.name);
+            copyToClipboard(nameBtn.dataset.code || nameBtn.dataset.name);
             return;
         }
         
@@ -251,8 +253,9 @@ function setupEventListeners() {
     });
     
     document.getElementById('copyNameBtn').addEventListener('click', () => {
-        const name = document.getElementById('modalName').textContent;
-        copyToClipboard(name);
+        const meta = document.getElementById('modalMeta').textContent;
+        const code = meta.split('·')[0].trim();
+        copyToClipboard(code);
         const btn = document.getElementById('copyNameBtn');
         btn.classList.add('copied');
         btn.textContent = 'COPIED!';
