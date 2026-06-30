@@ -176,7 +176,8 @@ body {
     margin: 0 auto;
     padding: 20px 24px 40px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: repeat(auto-fill, 170px);
+    justify-content: flex-start;
     gap: 12px;
 }
 
@@ -557,7 +558,7 @@ body {
     .gallery {
         padding: 14px 12px 32px;
         gap: 10px;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, 140px);
     }
     
     .card-info { padding: 8px 10px 10px; }
