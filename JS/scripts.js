@@ -10,7 +10,7 @@ let currentFilter = 'all';
 const CATEGORIES = {
     'all': { label: 'ALL', ips: [] },
     'character': { label: '卡通IP', ips: [] },
-    'brand': { label: '品牌', ips: [] },
+    'product': { label: '商品', ips: [] },
     'real': { label: '真人', ips: [] }
 };
 
@@ -116,7 +116,7 @@ function setupCategories() {
         return realPeopleBrands.some(b => brand.includes(b));
     }).map(ip => ip.id);
     
-    CATEGORIES['brand'].ips = allIPs.filter(ip => {
+    CATEGORIES['product'].ips = allIPs.filter(ip => {
         const brand = (ip.brand || '').toLowerCase();
         return brandIPs.some(b => brand.includes(b));
     }).map(ip => ip.id);
@@ -128,7 +128,7 @@ function setupCategories() {
 function renderFilterBar() {
     const filterBar = document.getElementById('filterBar');
     let html = '';
-    const mainCategories = ['all', 'character', 'brand', 'real'];
+    const mainCategories = ['all', 'character', 'product', 'real'];
     
     mainCategories.forEach(key => {
         const cat = CATEGORIES[key];
