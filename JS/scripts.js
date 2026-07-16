@@ -1,436 +1,350 @@
 /**
- * IP Archive - Gallery Scripts v5
+ * IP Archive - Gallery Scripts v6
+ * Safe rendering, accessible dialog, data-driven categories and deep links.
  */
 
 const DATA_URL = 'data.json';
-
+const FETCH_TIMEOUT = 10000;
 let allIPs = [];
 let currentFilter = 'all';
+let activeIP = null;
+let lastFocusedElement = null;
 
-const CATEGORIES = {
-    'all': { label: 'ALL', ips: [] },
-    'character': { label: '卡通IP', ips: [] },
-    'product': { label: '商品', ips: [] },
-    'real': { label: '真人', ips: [] }
-};
+const CATEGORY_LABELS = { all: 'ALL', character: '卡通IP', product: '商品', real: '真人' };
 
-// ═══ Init ═══
 async function init() {
+    setupEventListeners();
     try {
         await loadData();
-        setupCategories();
         renderFilterBar();
         renderGallery();
-        setupEventListeners();
+        openDeepLinkedIP();
     } catch (error) {
         console.error('Failed to load gallery data:', error);
-        document.getElementById('gallery').innerHTML = `
-            <div class="empty">
-                <div class="empty-text">LOADING FAILED</div>
-            </div>
-        `;
+        renderLoadError();
     }
 }
 
-// ═══ Load Data ═══
 async function loadData() {
-    const response = await fetch(DATA_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    allIPs = data.ips || [];
-
-    const versionTag = document.getElementById('versionTag');
-    if (versionTag && data.version) {
-        versionTag.textContent = data.version;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+    try {
+        const response = await fetch(DATA_URL, { signal: controller.signal });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!Array.isArray(data.ips)) throw new Error('Invalid data format');
+        allIPs = data.ips.map(normalizeIP);
+        const versionTag = document.getElementById('versionTag');
+        if (data.version) versionTag.textContent = data.version;
+    } finally {
+        clearTimeout(timeout);
     }
 }
 
-// ═══ Canvas 像素化 ═══
-// 图片加载后，生成黑白马赛克 canvas 覆盖层
-function createPixelOverlay(img, blocks) {
-    const cvs = document.createElement('canvas');
-    cvs.className = 'pixel-overlay';
-    cvs.width = img.naturalWidth || 400;
-    cvs.height = img.naturalHeight || 400;
-    const ctx = cvs.getContext('2d');
-    const w = cvs.width, h = cvs.height;
-    const bw = Math.max(1, Math.floor(w / blocks));
-    const bh = Math.max(1, Math.floor(h / blocks));
-    
-    // 缩小到像素块尺寸（邻近插值）
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, bw, bh);
-    // 放大回原尺寸（邻近插值 → 大颗粒马赛克）
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(cvs, 0, 0, bw, bh, 0, 0, w, h);
-    
-    // 转黑白
-    const imageData = ctx.getImageData(0, 0, w, h);
-    const d = imageData.data;
-    for (let i = 0; i < d.length; i += 4) {
-        const gray = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
-        d[i] = d[i+1] = d[i+2] = gray * 0.7; // brightness 0.7
-    }
-    ctx.putImageData(imageData, 0, 0);
-    
-    // 使用 CSS 填满容器
-    cvs.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;transition:opacity 0.4s;';
-    
-    return cvs;
+function normalizeIP(ip) {
+    return {
+        ...ip,
+        id: String(ip.id || ''),
+        code: String(ip.code || ''),
+        name: String(ip.name || ''),
+        brand: String(ip.brand || ''),
+        description: String(ip.description || ''),
+        type: CATEGORY_LABELS[ip.type] ? ip.type : inferType(ip),
+        preview: safeUrl(ip.preview),
+        brand_url: safeUrl(ip.brand_url),
+        official_url: safeUrl(ip.official_url),
+        source_url: safeUrl(ip.source_url)
+    };
 }
 
-// 遍历所有卡片，为每个图片生成像素化覆盖层
-function setupPixelation() {
-    document.querySelectorAll('.card-image img').forEach(img => {
-        if (img.dataset.pixelReady) return;
-        if (img.complete && img.naturalWidth > 0) {
-            img.dataset.pixelReady = '1';
-            const overlay = createPixelOverlay(img, 18);
-            img.parentElement.insertBefore(overlay, img.nextSibling);
-        } else {
-            img.addEventListener('load', () => {
-                img.dataset.pixelReady = '1';
-                const overlay = createPixelOverlay(img, 18);
-                img.parentElement.insertBefore(overlay, img.nextSibling);
-            }, { once: true });
-        }
-    });
+function inferType(ip) {
+    const brand = String(ip.brand || '').toLowerCase();
+    if (brand.includes('个人ip')) return 'real';
+    if (brand.includes('古茗')) return 'product';
+    return 'character';
 }
 
-// ═══ Categories ═══
-// 自动分类：根据品牌和特征判断
-function setupCategories() {
-    const realPeopleBrands = ['个人ip'];
-    const brandIPs = ['古茗'];
-    
-    CATEGORIES['character'].ips = allIPs.filter(ip => {
-        const brand = (ip.brand || '').toLowerCase();
-        // 卡通角色：有明确品牌方的非真人 IP
-        if (realPeopleBrands.some(b => brand.includes(b))) return false;
-        if (brandIPs.some(b => brand.includes(b))) return false;
-        return true;
-    }).map(ip => ip.id);
-    
-    CATEGORIES['real'].ips = allIPs.filter(ip => {
-        const brand = (ip.brand || '').toLowerCase();
-        return realPeopleBrands.some(b => brand.includes(b));
-    }).map(ip => ip.id);
-    
-    CATEGORIES['product'].ips = allIPs.filter(ip => {
-        const brand = (ip.brand || '').toLowerCase();
-        return brandIPs.some(b => brand.includes(b));
-    }).map(ip => ip.id);
-    
-    CATEGORIES['all'].ips = allIPs.map(ip => ip.id);
+function safeUrl(value) {
+    if (!value) return '';
+    try {
+        const url = new URL(value, window.location.href);
+        return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+    } catch { return ''; }
 }
 
-// ═══ Render Filter Bar ═══
+function categories() {
+    return ['all', 'character', 'product', 'real'].map(categoryId => ({
+        id: categoryId,
+        label: CATEGORY_LABELS[categoryId],
+        count: categoryId === 'all' ? allIPs.length : allIPs.filter(ip => ip.type === categoryId).length
+    }));
+}
+
 function renderFilterBar() {
     const filterBar = document.getElementById('filterBar');
-    let html = '';
-    const mainCategories = ['all', 'character', 'product', 'real'];
-    
-    mainCategories.forEach(key => {
-        const cat = CATEGORIES[key];
-        if (cat.ips.length > 0 || key === 'all') {
-            html += `
-                <div class="filter-group">
-                    <button class="filter-btn ${key === 'all' ? 'active' : ''}" data-filter="${key}">
-                        ${cat.label}
-                        <span class="filter-count">${cat.ips.length}</span>
-                    </button>
-                </div>
-            `;
-        }
+    filterBar.replaceChildren();
+    const fragment = document.createDocumentFragment();
+
+    categories().filter(category => category.count > 0).forEach(category => {
+        fragment.append(createFilterButton(category.label, category.count, category.id, currentFilter === category.id));
     });
-    
-    // 品牌子分类
-    const brandCounts = {};
-    allIPs.forEach(ip => {
-        const b = ip.brand || '';
-        if (b) brandCounts[b] = (brandCounts[b] || 0) + 1;
-    });
-    const sortedBrands = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]);
-    
-    if (sortedBrands.length > 0) {
-        html += `<div class="filter-sep"></div>`;
-        sortedBrands.forEach(([brand, count]) => {
-            html += `<button class="filter-btn filter-btn-sm" data-filter="brand:${brand}">${brand}<span class="filter-count">${count}</span></button>`;
+
+    const brandCounts = allIPs.reduce((counts, ip) => {
+        if (ip.brand) counts.set(ip.brand, (counts.get(ip.brand) || 0) + 1);
+        return counts;
+    }, new Map());
+    if (brandCounts.size) {
+        const separator = document.createElement('div');
+        separator.className = 'filter-sep';
+        separator.setAttribute('aria-hidden', 'true');
+        fragment.append(separator);
+        [...brandCounts.entries()].sort((a, b) => b[1] - a[1]).forEach(([brand, count]) => {
+            fragment.append(createFilterButton(brand, count, `brand:${brand}`, currentFilter === `brand:${brand}`, true));
         });
     }
-    
-    filterBar.innerHTML = html;
+    filterBar.append(fragment);
 }
 
-// ═══ Render Gallery ═══
+function createFilterButton(label, count, filter, isActive, small = false) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `filter-btn${small ? ' filter-btn-sm' : ''}${isActive ? ' active' : ''}`;
+    button.dataset.filter = filter;
+    button.setAttribute('aria-pressed', String(isActive));
+    button.append(document.createTextNode(label + ' '));
+    const countEl = document.createElement('span');
+    countEl.className = 'filter-count';
+    countEl.textContent = String(count);
+    button.append(countEl);
+    return button;
+}
+
+function filteredIPs() {
+    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    return allIPs.filter(ip => {
+        const matchesSearch = !searchTerm || [ip.name, ip.code, ip.brand, ip.id].some(value => value.toLowerCase().includes(searchTerm));
+        const matchesFilter = currentFilter === 'all' ||
+            (currentFilter.startsWith('brand:') ? ip.brand === currentFilter.slice(6) : ip.type === currentFilter);
+        return matchesSearch && matchesFilter;
+    });
+}
+
 function renderGallery() {
     const gallery = document.getElementById('gallery');
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    
-    let filteredIPs = allIPs;
-    
-    if (searchTerm) {
-        filteredIPs = filteredIPs.filter(ip => 
-            ip.name.toLowerCase().includes(searchTerm) ||
-            (ip.code && ip.code.toLowerCase().includes(searchTerm)) ||
-            (ip.brand && ip.brand.toLowerCase().includes(searchTerm))
-        );
-    }
-    
-    if (currentFilter !== 'all') {
-        if (currentFilter.startsWith('brand:')) {
-            const brand = currentFilter.replace('brand:', '');
-            filteredIPs = filteredIPs.filter(ip => ip.brand === brand);
-        } else {
-            const categoryIPs = CATEGORIES[currentFilter]?.ips || [];
-            filteredIPs = filteredIPs.filter(ip => categoryIPs.includes(ip.id));
-        }
-    }
-    
-    if (filteredIPs.length === 0) {
-        gallery.innerHTML = `
-            <div class="empty">
-                <div class="empty-text">NO RESULTS</div>
-            </div>
-        `;
+    const ips = filteredIPs();
+    gallery.setAttribute('aria-busy', 'false');
+    gallery.replaceChildren();
+    if (!ips.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.innerHTML = '<div class="empty-text">NO RESULTS</div>';
+        gallery.append(empty);
         return;
     }
-    
-    gallery.innerHTML = filteredIPs.map(ip => {
-        // 提取编号的数字部分 (IP001 → 001)
-        const codeNum = (ip.code || '').replace(/^IP/i, '');
-        // IP 名称拼音（取 id 下划线前部分，大写）
-        const pinyin = (ip.id || '').split('_')[0].toUpperCase();
-        return `
-        <article class="card" data-id="${ip.id}">
-            <div class="card-image">
-                <img src="${ip.preview}" alt="${ip.name}" loading="lazy">
-                <div class="card-overlay"></div>
-                <div class="card-badge">
-                    <span class="badge-label">${pinyin}</span>
-                    <span class="badge-number">${codeNum}</span>
-                </div>
-                <div class="card-links">
-                    ${ip.brand_url ? `<a class="card-link" href="${ip.brand_url}" target="_blank">BRAND</a>` : ''}
-                    ${ip.official_url ? `<a class="card-link" href="${ip.official_url}" target="_blank">OFFICIAL</a>` : ''}
-                </div>
-            </div>
-            <div class="card-info">
-                <div class="card-code">${ip.code || ''}</div>
-                <div class="card-name" data-name="${ip.name}" data-code="${ip.code || ''}">${ip.name}</div>
-                <div class="card-brand">${ip.brand || ''}</div>
-            </div>
-        </article>
-    `}).join('');
-
-    // 图片加载后生成马赛克覆盖层
+    const fragment = document.createDocumentFragment();
+    ips.forEach(ip => fragment.append(createCard(ip)));
+    gallery.append(fragment);
     setupPixelation();
 }
 
-// ═══ Event Listeners ═══
-function setupEventListeners() {
-    document.getElementById('searchInput').addEventListener('input', debounce(renderGallery, 200));
-    
-    document.getElementById('filterBar').addEventListener('click', (e) => {
-        if (e.target.classList.contains('filter-btn')) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            currentFilter = e.target.dataset.filter;
-            renderGallery();
-        }
-    });
-    
-    document.getElementById('gallery').addEventListener('click', (e) => {
-        const card = e.target.closest('.card');
-        const nameBtn = e.target.closest('.card-name');
-        const linkBtn = e.target.closest('.card-link');
-        
-        if (linkBtn) return;
-        
-        if (nameBtn) {
-            e.stopPropagation();
-            copyToClipboard(nameBtn.dataset.code || nameBtn.dataset.name);
-            return;
-        }
-        
-        if (card) {
-            const ipId = card.dataset.id;
-            const ip = allIPs.find(i => i.id === ipId);
-            if (ip) openModal(ip);
-        }
-    });
-    
-    document.querySelector('.modal-close').addEventListener('click', closeModal);
-    document.getElementById('modal').addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeModal();
-    });
-    
-    document.getElementById('copyNameBtn').addEventListener('click', () => {
-        const meta = document.getElementById('modalMeta').textContent;
-        const code = meta.split('·')[0].trim();
-        copyToClipboard(code);
-        const btn = document.getElementById('copyNameBtn');
-        btn.classList.add('copied');
-        btn.textContent = 'COPIED!';
-        setTimeout(() => {
-            btn.classList.remove('copied');
-            btn.textContent = 'COPY';
-        }, 1500);
-    });
+function createCard(ip) {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.dataset.id = ip.id;
+    card.tabIndex = 0;
+    card.setAttribute('aria-label', `查看 ${ip.code} ${ip.name} 详情`);
 
-    // Keyboard
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-    });
+    const imageWrap = document.createElement('div');
+    imageWrap.className = 'card-image';
+    const image = document.createElement('img');
+    image.src = ip.preview;
+    image.alt = ip.name;
+    image.loading = 'lazy';
+    image.addEventListener('error', () => imageWrap.classList.add('image-error'), { once: true });
+    imageWrap.append(image, createEl('div', 'card-overlay'));
 
-    // ═══ Auto-play: 鼠标5秒不动 → 自动翻卡片 ═══
-    let autoPlayTimer = null;
-    let autoPlayInterval = null;
-    let autoPlayActive = false;
-    let autoPlayCard = null;
-    const IDLE_DELAY = 5000;
-    const SHOW_DURATION = 2500;
-    const CYCLE_GAP = 800;
+    const badge = createEl('div', 'card-badge');
+    badge.append(createEl('span', 'badge-label', ip.id.split('_')[0].toUpperCase()), createEl('span', 'badge-number', ip.code.replace(/^IP/i, '')));
+    imageWrap.append(badge);
 
-    function applyHover(card) {
-        if (!card) return;
-        const img = card.querySelector('img');
-        const overlay = card.querySelector('.card-overlay');
-        const pixelOverlay = card.querySelector('.pixel-overlay');
-        card.style.background = '#1a1a1a';
-        card.style.borderColor = '#4a3a28';
-        if (img) {
-            img.style.transform = 'scale(1.06)';
-        }
-        if (overlay) overlay.style.opacity = '0';
-        if (pixelOverlay) pixelOverlay.style.opacity = '0';
-        const num = card.querySelector('.badge-number');
-        if (num) num.style.fontSize = '18px';
-        const lbl = card.querySelector('.badge-label');
-        if (lbl) lbl.style.fontSize = '7px';
-    }
+    const links = createEl('div', 'card-links');
+    appendExternalLink(links, ip.brand_url, 'BRAND');
+    appendExternalLink(links, ip.official_url, 'OFFICIAL');
+    if (links.childElementCount) imageWrap.append(links);
 
-    function removeHover(card) {
-        if (!card) return;
-        card.style.background = '';
-        card.style.borderColor = '';
-        const img = card.querySelector('img');
-        const overlay = card.querySelector('.card-overlay');
-        const pixelOverlay = card.querySelector('.pixel-overlay');
-        if (img) {
-            img.style.transform = '';
-        }
-        if (overlay) overlay.style.opacity = '';
-        if (pixelOverlay) pixelOverlay.style.opacity = '';
-        const num = card.querySelector('.badge-number');
-        if (num) num.style.fontSize = '';
-        const lbl = card.querySelector('.badge-label');
-        if (lbl) lbl.style.fontSize = '';
-    }
-
-    function stopAutoPlay() {
-        if (autoPlayInterval) {
-            clearInterval(autoPlayInterval);
-            autoPlayInterval = null;
-        }
-        if (autoPlayCard) {
-            removeHover(autoPlayCard);
-            autoPlayCard = null;
-        }
-        autoPlayActive = false;
-    }
-
-    function startAutoPlay() {
-        if (autoPlayActive) return;
-        autoPlayActive = true;
-        const cards = document.querySelectorAll('.card');
-        if (cards.length === 0) return;
-
-        function showNext() {
-            if (autoPlayCard) removeHover(autoPlayCard);
-            let nextIndex;
-            do {
-                nextIndex = Math.floor(Math.random() * cards.length);
-            } while (nextIndex === Array.from(cards).indexOf(autoPlayCard) && cards.length > 1);
-            autoPlayCard = cards[nextIndex];
-            applyHover(autoPlayCard);
-        }
-
-        showNext();
-        autoPlayInterval = setInterval(showNext, SHOW_DURATION + CYCLE_GAP);
-    }
-
-    function resetIdleTimer() {
-        stopAutoPlay();
-        if (autoPlayTimer) clearTimeout(autoPlayTimer);
-        autoPlayTimer = setTimeout(startAutoPlay, IDLE_DELAY);
-    }
-
-    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'].forEach(event => {
-        document.addEventListener(event, resetIdleTimer, { passive: true });
-    });
-
-    resetIdleTimer();
+    const info = createEl('div', 'card-info');
+    info.append(createEl('div', 'card-code', ip.code));
+    const name = createEl('button', 'card-name', ip.name);
+    name.type = 'button';
+    name.dataset.code = ip.code;
+    name.setAttribute('aria-label', `复制 ${ip.code}`);
+    info.append(name, createEl('div', 'card-brand', ip.brand));
+    card.append(imageWrap, info);
+    return card;
 }
 
-// ═══ Modal ═══
-function openModal(ip) {
+function createEl(tag, className, text = '') {
+    const el = document.createElement(tag);
+    el.className = className;
+    el.textContent = text;
+    return el;
+}
+
+function appendExternalLink(parent, url, label) {
+    if (!url) return;
+    const link = document.createElement('a');
+    link.className = 'card-link';
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = label;
+    parent.append(link);
+}
+
+function setupPixelation() {
+    document.querySelectorAll('.card-image img').forEach(img => {
+        if (img.dataset.pixelReady) return;
+        const addOverlay = () => {
+            try {
+                img.dataset.pixelReady = '1';
+                const overlay = createPixelOverlay(img, 18);
+                if (overlay) img.after(overlay);
+            } catch (error) {
+                console.warn('Pixel overlay unavailable; showing source image.', error);
+                img.parentElement.classList.add('pixelation-unavailable');
+            }
+        };
+        if (img.complete && img.naturalWidth > 0) addOverlay();
+        else img.addEventListener('load', addOverlay, { once: true });
+    });
+}
+
+function createPixelOverlay(img, blocks) {
+    const w = img.naturalWidth || 400, h = img.naturalHeight || 400;
+    const cvs = document.createElement('canvas');
+    cvs.className = 'pixel-overlay'; cvs.width = w; cvs.height = h;
+    const ctx = cvs.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    const bw = Math.max(1, Math.floor(w / blocks)), bh = Math.max(1, Math.floor(h / blocks));
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, bw, bh);
+    ctx.drawImage(cvs, 0, 0, bw, bh, 0, 0, w, h);
+    const imageData = ctx.getImageData(0, 0, w, h);
+    for (let i = 0; i < imageData.data.length; i += 4) {
+        const gray = 0.7 * (0.299 * imageData.data[i] + 0.587 * imageData.data[i + 1] + 0.114 * imageData.data[i + 2]);
+        imageData.data[i] = imageData.data[i + 1] = imageData.data[i + 2] = gray;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    cvs.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;transition:opacity .4s;';
+    return cvs;
+}
+
+function setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', debounce(renderGallery, 180));
+    document.getElementById('filterBar').addEventListener('click', event => {
+        const button = event.target.closest('.filter-btn');
+        if (!button) return;
+        currentFilter = button.dataset.filter;
+        renderFilterBar(); renderGallery();
+    });
+    document.getElementById('gallery').addEventListener('click', event => {
+        const link = event.target.closest('.card-link');
+        if (link) return;
+        const nameButton = event.target.closest('.card-name');
+        if (nameButton) { event.stopPropagation(); copyToClipboard(nameButton.dataset.code); return; }
+        const card = event.target.closest('.card');
+        if (card) openIPById(card.dataset.id, card);
+    });
+    document.getElementById('gallery').addEventListener('keydown', event => {
+        if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('.card') && !event.target.closest('.card-name')) {
+            event.preventDefault(); openIPById(event.target.closest('.card').dataset.id, event.target.closest('.card'));
+        }
+    });
+    document.querySelector('.modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', event => { if (event.target === event.currentTarget) closeModal(); });
+    document.getElementById('copyNameBtn').addEventListener('click', () => {
+        if (!activeIP) return;
+        copyToClipboard(activeIP.code);
+        const btn = document.getElementById('copyNameBtn');
+        btn.textContent = 'COPIED!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'COPY IP CODE'; btn.classList.remove('copied'); }, 1500);
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && document.getElementById('modal').classList.contains('active')) closeModal();
+        if (event.key === 'Tab' && document.getElementById('modal').classList.contains('active')) trapFocus(event);
+    });
+}
+
+function openIPById(id, trigger) {
+    const ip = allIPs.find(item => item.id === id);
+    if (ip) openModal(ip, trigger);
+}
+
+function openDeepLinkedIP() {
+    const code = new URLSearchParams(window.location.search).get('ip');
+    if (!code) return;
+    const ip = allIPs.find(item => item.code.toLowerCase() === code.toLowerCase() || item.id === code);
+    if (ip) openModal(ip);
+}
+
+function openModal(ip, trigger = document.activeElement) {
+    activeIP = ip; lastFocusedElement = trigger;
     const modal = document.getElementById('modal');
-    
-    document.getElementById('modalView').style.display = '';
-    document.getElementById('modalImage').src = ip.preview || '';
+    document.getElementById('modalImage').src = ip.preview;
     document.getElementById('modalImage').alt = ip.name;
     document.getElementById('modalName').textContent = ip.name;
-    document.getElementById('modalMeta').textContent = `${ip.code || ''} · ${ip.brand || ''}`;
+    document.getElementById('modalMeta').textContent = `${ip.code} · ${ip.brand}`;
     document.getElementById('modalDescription').textContent = ip.description || 'No description available.';
+    setModalLink('brandLink', ip.brand_url); setModalLink('officialLink', ip.official_url); setModalLink('sourceLink', ip.source_url);
+    history.replaceState(null, '', `${location.pathname}?ip=${encodeURIComponent(ip.code)}`);
+    modal.classList.add('active'); modal.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
+    document.querySelector('.modal-close').focus();
+}
 
-    const brandLink = document.getElementById('brandLink');
-    const officialLink = document.getElementById('officialLink');
-    const sourceLink = document.getElementById('sourceLink');
-
-    if (ip.brand_url) { brandLink.href = ip.brand_url; brandLink.classList.remove('hidden'); }
-    else { brandLink.classList.add('hidden'); }
-
-    if (ip.official_url) { officialLink.href = ip.official_url; officialLink.classList.remove('hidden'); }
-    else { officialLink.classList.add('hidden'); }
-
-    if (ip.source_url) { sourceLink.href = ip.source_url; sourceLink.classList.remove('hidden'); }
-    else { sourceLink.classList.add('hidden'); }
-    
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+function setModalLink(id, url) {
+    const link = document.getElementById(id);
+    link.classList.toggle('hidden', !url);
+    if (url) link.href = url;
 }
 
 function closeModal() {
-    document.getElementById('modal').classList.remove('active');
-    document.body.style.overflow = '';
+    const modal = document.getElementById('modal');
+    if (!modal.classList.contains('active')) return;
+    modal.classList.remove('active'); modal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = '';
+    history.replaceState(null, '', location.pathname);
+    if (lastFocusedElement?.focus) lastFocusedElement.focus();
+}
+
+function trapFocus(event) {
+    const focusable = [...document.querySelectorAll('#modal button:not([disabled]), #modal a:not(.hidden)')];
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+}
+
+function renderLoadError() {
+    const gallery = document.getElementById('gallery'); gallery.setAttribute('aria-busy', 'false'); gallery.replaceChildren();
+    const error = createEl('div', 'empty');
+    error.innerHTML = '<div class="empty-text">LOADING FAILED</div>';
+    const retry = createEl('button', 'retry-btn', 'RETRY'); retry.type = 'button';
+    retry.addEventListener('click', init); error.append(retry); gallery.append(error);
 }
 
 function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
+    const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1500);
 }
 
-function copyToClipboard(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+async function copyToClipboard(text) {
+    try { await navigator.clipboard.writeText(text); }
+    catch {
+        const textarea = document.createElement('textarea'); textarea.value = text; textarea.style.cssText = 'position:fixed;opacity:0;';
+        document.body.append(textarea); textarea.select(); document.execCommand('copy'); textarea.remove();
+    }
     showToast('COPIED');
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-    };
-}
+function debounce(func, wait) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func(...args), wait); }; }
 
 init();

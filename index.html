@@ -7,37 +7,28 @@
     <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-top">
             <h1 class="logo">IP ARCHIVE <span>CHARACTER COLLECTION</span></h1>
             <div class="search-bar">
-                <input type="text" id="searchInput" class="search-input" placeholder="搜索编号、名称、品牌...">
+                <label class="sr-only" for="searchInput">搜索 IP</label>
+                <input type="search" id="searchInput" class="search-input" placeholder="搜索编号、名称、品牌..." autocomplete="off">
             </div>
         </div>
-        
-        <nav class="filter-bar" id="filterBar">
-            <!-- Filter buttons will be rendered here -->
-        </nav>
+        <nav class="filter-bar" id="filterBar" aria-label="IP 分类筛选"></nav>
     </header>
 
-    <!-- Gallery -->
-    <main class="gallery" id="gallery">
-        <!-- Cards will be rendered here -->
+    <main class="gallery" id="gallery" aria-live="polite" aria-busy="true">
+        <div class="empty"><div class="empty-text">LOADING...</div></div>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">IP ARCHIVE <span id="versionTag"></span></footer>
 
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close">×</button>
-            <!-- View Mode -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalName" aria-hidden="true">
+        <div class="modal-content" role="document">
+            <button class="modal-close" type="button" aria-label="关闭详情">×</button>
             <div id="modalView">
-                <div class="modal-image">
-                    <img id="modalImage" src="" alt="">
-                </div>
+                <div class="modal-image"><img id="modalImage" src="" alt=""></div>
                 <div class="modal-info">
                     <h2 id="modalName"></h2>
                     <p id="modalMeta" class="modal-meta"></p>
@@ -45,18 +36,16 @@
                     <p id="modalDescription" class="modal-desc"></p>
                     <div class="modal-divider"></div>
                     <div class="modal-actions">
-                        <button id="copyNameBtn" class="btn-copy">COPY</button>
-                        <a id="brandLink" class="btn-link" href="" target="_blank">BRAND</a>
-                        <a id="officialLink" class="btn-link" href="" target="_blank">OFFICIAL</a>
-                        <a id="sourceLink" class="btn-link" href="" target="_blank">SOURCE</a>
+                        <button id="copyNameBtn" class="btn-copy" type="button">COPY IP CODE</button>
+                        <a id="brandLink" class="btn-link" href="" target="_blank" rel="noopener noreferrer">BRAND</a>
+                        <a id="officialLink" class="btn-link" href="" target="_blank" rel="noopener noreferrer">OFFICIAL</a>
+                        <a id="sourceLink" class="btn-link" href="" target="_blank" rel="noopener noreferrer">SOURCE</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Toast -->
-    <div id="toast" class="toast">COPIED</div>
-
+    <div id="toast" class="toast" role="status" aria-live="polite">COPIED</div>
     <script src="JS/scripts.js"></script>
 </body>
 </html>

@@ -12,7 +12,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/guming_moli_preview.webp",
-      "description": "古茗云岭茉莉 - 冷凝水珠、冰爽感、新鲜清澈"
+      "description": "古茗云岭茉莉 - 冷凝水珠、冰爽感、新鲜清澈",
+      "type": "product"
     },
     {
       "id": "lili",
@@ -23,7 +24,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/lili_preview.webp",
-      "description": "莉莉 - 童趣可爱、活泼开朗"
+      "description": "莉莉 - 童趣可爱、活泼开朗",
+      "type": "real"
     },
     {
       "id": "mangguozai",
@@ -34,7 +36,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/mangguozai_preview.webp",
-      "description": "芒果仔 - 科技感、阳光活力、年轻化"
+      "description": "芒果仔 - 科技感、阳光活力、年轻化",
+      "type": "character"
     },
     {
       "id": "maqi",
@@ -45,7 +48,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/maqi_preview.webp",
-      "description": "马奇 - 小朋友角色、活泼可爱"
+      "description": "马奇 - 小朋友角色、活泼可爱",
+      "type": "real"
     },
     {
       "id": "mihouzi",
@@ -56,7 +60,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/mihouzi_preview.webp",
-      "description": "猕猴仔 - 猕猴桃色、圆润可爱、科技感"
+      "description": "猕猴仔 - 猕猴桃色、圆润可爱、科技感",
+      "type": "character"
     },
     {
       "id": "yunyi",
@@ -67,7 +72,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/yunyi_preview.webp",
-      "description": "云一朵 - 动漫可爱、小孩Q版"
+      "description": "云一朵 - 动漫可爱、小孩Q版",
+      "type": "character"
     },
     {
       "id": "da_er_gou",
@@ -78,7 +84,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/da_er_gou_preview.webp",
-      "description": "大耳狗 - 可爱、治愈、蓬松"
+      "description": "大耳狗 - 可爱、治愈、蓬松",
+      "type": "character"
     },
     {
       "id": "xunniao",
@@ -89,7 +96,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/xunniao_preview.webp",
-      "description": "迅鸟 - 科技、可爱"
+      "description": "迅鸟 - 科技、可爱",
+      "type": "character"
     },
     {
       "id": "bilibili",
@@ -100,7 +108,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/bilibili_preview.webp",
-      "description": "哔哩哔哩 - 可爱卡通"
+      "description": "哔哩哔哩 - 可爱卡通",
+      "type": "character"
     },
     {
       "id": "xiaodianshi_3d",
@@ -111,7 +120,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/xiaodianshi_3d_preview.webp",
-      "description": "小电视3D - 3D可爱卡通、有趣"
+      "description": "小电视3D - 3D可爱卡通、有趣",
+      "type": "character"
     },
     {
       "id": "ximaoxmao",
@@ -122,7 +132,8 @@
       "official_url": "",
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/ximaoxmao_preview.webp",
-      "description": "喜猫 - 可爱开心"
+      "description": "喜猫 - 可爱开心",
+      "type": "character"
     }
   ]
 }
