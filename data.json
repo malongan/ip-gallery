@@ -1,6 +1,6 @@
 {
   "version": "v1.0.0",
-  "updated": "2026-07-16",
+  "updated": "2026-07-23",
   "note": "IP编号已固定，以后新增IP按顺序往后排",
   "ips": [
     {
@@ -133,6 +133,18 @@
       "source_url": "",
       "preview": "https://malongan.github.io/ip-gallery/images/preview/ximaoxmao_preview.webp",
       "description": "喜猫 - 可爱开心",
+      "type": "character"
+    },
+    {
+      "id": "weibozai",
+      "code": "IP012",
+      "name": "微博仔",
+      "brand": "微博会员",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/preview/weibozai_preview.webp",
+      "description": "微博仔 - 可爱、热情、3D风格",
       "type": "character"
     }
   ]
