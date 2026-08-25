@@ -146,6 +146,18 @@
       "preview": "https://malongan.github.io/ip-gallery/images/preview/weibozai_preview.webp",
       "description": "微博仔 - 可爱、热情、3D风格",
       "type": "character"
+    },
+    {
+      "id": "kiki",
+      "code": "IP013",
+      "name": "kiki",
+      "brand": "爱奇艺",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/preview/kiki_preview.webp",
+      "description": "kiki",
+      "type": "character"
     }
   ]
 }
