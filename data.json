@@ -158,6 +158,18 @@
       "preview": "https://malongan.github.io/ip-gallery/images/preview/kiki_preview.webp",
       "description": "kiki",
       "type": "character"
+    },
+    {
+      "id": "xiao7",
+      "code": "IP014",
+      "name": "小7",
+      "brand": "爱奇艺",
+      "brand_url": "",
+      "official_url": "",
+      "source_url": "",
+      "preview": "https://malongan.github.io/ip-gallery/images/preview/xiao7_preview.webp",
+      "description": "小7",
+      "type": "character"
     }
   ]
 }
